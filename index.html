@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Dinamik Animasyon Slider - TV Optimize</title>
+    <title>Dinamik Animasyon Slider - TV Optimize & Çoklu SVG</title>
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
         #slider { position: relative; width: 100vw; height: 100vh; }
@@ -72,9 +72,10 @@
             const resp = await fetch('settings.json?t=' + Date.now());
             const config = await resp.json();
 
-            // Bellek Sızıntısı Önleyici
+            // Bellek Sızıntısı Önleyici (Her iki alanın zamanlayıcısını da temizle)
             slides.forEach(s => {
-                if (s.imageTimer) clearInterval(s.imageTimer);
+                if (s.imageTimer1) clearInterval(s.imageTimer1);
+                if (s.imageTimer2) clearInterval(s.imageTimer2);
             });
 
             slider.innerHTML = ""; 
@@ -97,22 +98,51 @@
                     try {
                         const svgDoc = obj.contentDocument;
                         if (svgDoc) {
-                            const imgElement = svgDoc.getElementById("degisen-resim");
+                            
+                            // ==========================================
+                            // 1. BÖLÜM: 1. SVG VEYA 1. ALAN ROTASYONU
+                            // ==========================================
+                            const imgElement1 = svgDoc.getElementById("degisen-resim-1");
+                            if (imgElement1) {
+                                // 1. SVG'de dönecek 3 resim
+                                const subImages1 = ["resim1.jpg", "resim2.jpg", "resim3.jpg"]; 
+                                let currentIndex1 = 0;
 
-                            if (imgElement) {
-                                const subImages = ["resim1.jpg", "resim2.jpg", "resim3.jpg", "resim4.jpg", "resim5.jpg", "resim6.jpg"]; 
-                                let currentIndex = 0;
+                                if(obj.imageTimer1) clearInterval(obj.imageTimer1);
 
-                                if(obj.imageTimer) clearInterval(obj.imageTimer);
-
-                                obj.imageTimer = setInterval(() => {
+                                obj.imageTimer1 = setInterval(() => {
+                                    // Sadece SVG ekranda aktifse resmi değiştir (Performans tasarrufu)
                                     if (!obj.classList.contains("active")) return;
-                                    currentIndex = (currentIndex + 1) % subImages.length;
-                                    let yeniResim = subImages[currentIndex];
-                                    imgElement.setAttribute("href", yeniResim);
-                                    imgElement.setAttributeNS("http://www.w3.org/1999/xlink", "href", yeniResim);
-                                }, 2000); 
+                                    
+                                    currentIndex1 = (currentIndex1 + 1) % subImages1.length;
+                                    let yeniResim1 = subImages1[currentIndex1];
+                                    imgElement1.setAttribute("href", yeniResim1);
+                                    imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", yeniResim1);
+                                }, 3000); // 3 saniyede bir değiştir
                             }
+
+                            // ==========================================
+                            // 2. BÖLÜM: 2. SVG VEYA 2. ALAN ROTASYONU
+                            // ==========================================
+                            const imgElement2 = svgDoc.getElementById("degisen-resim-2");
+                            if (imgElement2) {
+                                // 2. SVG'de dönecek FARKLI 3 resim
+                                const subImages2 = ["resim4.jpg", "resim5.jpg", "resim6.jpg"]; 
+                                let currentIndex2 = 0;
+
+                                if(obj.imageTimer2) clearInterval(obj.imageTimer2);
+
+                                obj.imageTimer2 = setInterval(() => {
+                                    // Sadece SVG ekranda aktifse resmi değiştir (Performans tasarrufu)
+                                    if (!obj.classList.contains("active")) return;
+                                    
+                                    currentIndex2 = (currentIndex2 + 1) % subImages2.length;
+                                    let yeniResim2 = subImages2[currentIndex2];
+                                    imgElement2.setAttribute("href", yeniResim2);
+                                    imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", yeniResim2);
+                                }, 3000); // 3 saniyede bir değiştir
+                            }
+
                         }
                     } catch(e) {
                         console.warn("SVG CORS Uyarısı:", e);
