@@ -16,7 +16,7 @@
             transition: all 1s ease-in-out; 
             pointer-events: none; 
             border: none; 
-            object-fit: contain; /* Görselin en-boy oranını koruyarak tam ekrana sığdırır */
+            object-fit: contain; 
             
             /* TV'ler için GPU Hızlandırma ve Bellek Optimizasyonları */
             backface-visibility: hidden;
@@ -38,31 +38,29 @@
         .spin-zoom{transform: scale(0.2) rotate(-360deg);opacity:0;}.spin-zoom.active{transform: scale(1) rotate(0);opacity:1;transition: all 1.9s ease;}
         .rotate3d {transform: rotate3d(1,1,0,90deg);opacity:0;}.rotate3d.active{transform: rotate3d(0,0,0,0deg);opacity:1;transition: all 1.9s ease;}
         .cube{transform:rotateY(180deg) scale(.5);opacity:0;}.cube.active{transform:rotateY(0) scale(1);opacity:1;transition:3s;}
-
-        /* Buton Stili */
-        #fullscreen-btn { position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 12px 20px; background: rgba(255, 255, 255, 0.15); color: white; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; cursor: pointer; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; text-transform: uppercase; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
-        body:hover #fullscreen-btn { opacity: 1; }
-        :fullscreen #fullscreen-btn, :-webkit-full-screen #fullscreen-btn, :-ms-fullscreen #fullscreen-btn { display: none !important; }
     </style>
 </head>
 <body>
 
-<button id="fullscreen-btn">Tam Ekran Yap</button>
 <div id="slider"></div>
 
 <script>
     const slider = document.getElementById("slider");
-    const fsBtn = document.getElementById("fullscreen-btn");
     let slides = [];
     let timer;
     let isUpdating = false; 
 
-    // Tam ekran fonksiyonu
-    fsBtn.addEventListener("click", () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => console.error(err));
+    // OTOMATİK TAM EKRAN: 5 Saniye Sonra
+    setTimeout(() => {
+        const docEl = document.documentElement;
+        const requestMethod = docEl.requestFullscreen || docEl.webkitRequestFullScreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+        
+        if (requestMethod) {
+            requestMethod.call(docEl).catch(err => {
+                console.warn("Otomatik tam ekran başarısız: Tarayıcı kullanıcı etkileşimi bekliyor olabilir.", err);
+            });
         }
-    });
+    }, 5000);
 
     // ANDROID TV OPTİMİZASYONU: Cihaz belleğini tamamen temizlemek için her 4 saatte bir sayfayı yenile
     setTimeout(() => {
@@ -74,7 +72,7 @@
             const resp = await fetch('settings.json?t=' + Date.now());
             const config = await resp.json();
 
-            // Önceki slaytların zamanlayıcılarını (interval) temizle (Memory Leak önleyici)
+            // Bellek Sızıntısı Önleyici
             slides.forEach(s => {
                 if (s.imageTimer) clearInterval(s.imageTimer);
             });
@@ -82,7 +80,6 @@
             slider.innerHTML = ""; 
             slides = [];
 
-            // İlk yüklemede de 30 saniyelik cache mantığını kullan
             let cacheBuster = Math.floor(Date.now() / 30000);
 
             config.forEach((s) => {
@@ -94,9 +91,8 @@
                 obj.className = `slide ${s.effect}`;
                 obj.dataset.duration = s.duration;
                 obj.dataset.effect = s.effect;
-                obj.dataset.currentUrl = initialUrl; // Güncelleme kontrolü için sakla
+                obj.dataset.currentUrl = initialUrl;
 
-                // SVG yüklendiğinde çalışacak kod
                 obj.addEventListener('load', function() {
                     try {
                         const svgDoc = obj.contentDocument;
@@ -110,12 +106,9 @@
                                 if(obj.imageTimer) clearInterval(obj.imageTimer);
 
                                 obj.imageTimer = setInterval(() => {
-                                    // Slayt aktif değilse arka planda resim değiştirip RAM'i yorma
                                     if (!obj.classList.contains("active")) return;
-
                                     currentIndex = (currentIndex + 1) % subImages.length;
                                     let yeniResim = subImages[currentIndex];
-                                    
                                     imgElement.setAttribute("href", yeniResim);
                                     imgElement.setAttributeNS("http://www.w3.org/1999/xlink", "href", yeniResim);
                                 }, 2000); 
@@ -159,11 +152,9 @@
         isUpdating = true;
 
         try {
-            // Ayarları anlık çek
             const resp = await fetch('settings.json?t=' + Date.now());
             const newConfig = await resp.json();
 
-            // Slayt eklendi/çıkarıldı ise sistemi baştan başlat
             if (newConfig.length !== slides.length) {
                 clearTimeout(timer);
                 initSlider();
@@ -171,24 +162,20 @@
                 return;
             }
 
-            // AKILLI ÖNBELLEK: Sadece 30 saniyede bir değişen numara üretir
             let cacheBuster = Math.floor(Date.now() / 30000); 
 
             newConfig.forEach((item, i) => {
                 if (slides[i]) {
                     slides[i].dataset.duration = item.duration;
                     
-                    // Efekt Güncellemesi
                     if (slides[i].dataset.effect !== item.effect) {
                         slides[i].classList.remove(slides[i].dataset.effect);
                         slides[i].classList.add(item.effect);
                         slides[i].dataset.effect = item.effect;
                     }
                     
-                    // Dosya Adı ve SVG İçerik Güncellemesi
                     let targetUrl = item.file + "?v=" + cacheBuster;
 
-                    // Sadece pasif slaytta ve URL (30 saniyelik periyot) değiştiyse güncelle
                     if (!slides[i].classList.contains("active") && slides[i].dataset.currentUrl !== targetUrl) {
                         slides[i].data = targetUrl;
                         slides[i].dataset.currentUrl = targetUrl;
@@ -202,7 +189,6 @@
         }
     }
 
-    // Sistemi başlat
     initSlider();
 </script>
 
