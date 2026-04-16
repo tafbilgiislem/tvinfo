@@ -1,11 +1,11 @@
 [
   {
-    "file": "slayt.svg",
+    "file": "kampanya.svg",
     "effect": "cube",
     "duration": 1000
   },
   {
-    "file": "kampanya.svg",
+    "file": "slayt.svg",
     "effect": "cube",
     "duration": 25000
   },
