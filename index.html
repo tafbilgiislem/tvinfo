@@ -2,12 +2,12 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Dinamik Animasyon Slider - TV Optimize & Çoklu SVG</title>
+    <title>Dinamik Animasyon Slider - TV Optimize (Çift Alan)</title>
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
         #slider { position: relative; width: 100vw; height: 100vh; }
         
-        /* Animasyon Efektleri ve Donanım (GPU) Hızlandırma */
+        /* Animasyon Efektleri ve TV (GPU) Hızlandırma */
         .slide { 
             position: absolute; 
             width: 100%; 
@@ -18,7 +18,7 @@
             border: none; 
             object-fit: contain; 
             
-            /* TV'ler için GPU Hızlandırma ve Bellek Optimizasyonları */
+            /* TV Bellek Optimizasyonları */
             backface-visibility: hidden;
             perspective: 1000px;
             transform: translateZ(0); 
@@ -54,25 +54,20 @@
     setTimeout(() => {
         const docEl = document.documentElement;
         const requestMethod = docEl.requestFullscreen || docEl.webkitRequestFullScreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
-        
         if (requestMethod) {
-            requestMethod.call(docEl).catch(err => {
-                console.warn("Otomatik tam ekran başarısız: Tarayıcı kullanıcı etkileşimi bekliyor olabilir.", err);
-            });
+            requestMethod.call(docEl).catch(err => console.warn("Tam ekran hatası:", err));
         }
     }, 5000);
 
-    // ANDROID TV OPTİMİZASYONU: Cihaz belleğini tamamen temizlemek için her 4 saatte bir sayfayı yenile
-    setTimeout(() => {
-        window.location.reload();
-    }, 4 * 60 * 60 * 1000);
+    // ANDROID TV: 4 Saatte bir belleği temizle
+    setTimeout(() => window.location.reload(), 4 * 60 * 60 * 1000);
 
     async function initSlider() {
         try {
             const resp = await fetch('settings.json?t=' + Date.now());
             const config = await resp.json();
 
-            // Bellek Sızıntısı Önleyici (Her iki alanın zamanlayıcısını da temizle)
+            // Eski zamanlayıcıları temizle
             slides.forEach(s => {
                 if (s.imageTimer1) clearInterval(s.imageTimer1);
                 if (s.imageTimer2) clearInterval(s.imageTimer2);
@@ -80,73 +75,60 @@
 
             slider.innerHTML = ""; 
             slides = [];
-
             let cacheBuster = Math.floor(Date.now() / 30000);
 
             config.forEach((s) => {
                 const obj = document.createElement("object");
-                
                 let initialUrl = s.file + "?v=" + cacheBuster;
                 obj.data = initialUrl; 
                 obj.type = "image/svg+xml";
                 obj.className = `slide ${s.effect}`;
                 obj.dataset.duration = s.duration;
-                obj.dataset.effect = s.effect;
                 obj.dataset.currentUrl = initialUrl;
 
                 obj.addEventListener('load', function() {
                     try {
                         const svgDoc = obj.contentDocument;
-                        if (svgDoc) {
+                        if (!svgDoc) return;
+
+                        // --- ALAN 1 ROTASYONU ---
+                        const imgElement1 = svgDoc.getElementById("degisen-resim-1");
+                        if (imgElement1) {
+                            const subImages1 = ["resim1.jpg", "resim2.jpg", "resim3.jpg"]; 
+                            let idx1 = 0;
                             
-                            // ==========================================
-                            // 1. BÖLÜM: 1. SVG VEYA 1. ALAN ROTASYONU
-                            // ==========================================
-                            const imgElement1 = svgDoc.getElementById("degisen-resim-1");
-                            if (imgElement1) {
-                                // 1. SVG'de dönecek 3 resim
-                                const subImages1 = ["resim1.jpg", "resim2.jpg", "resim3.jpg"]; 
-                                let currentIndex1 = 0;
+                            // ANINDA İLK RESMİ YÜKLE
+                            imgElement1.setAttribute("href", subImages1[0]);
+                            imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages1[0]);
 
-                                if(obj.imageTimer1) clearInterval(obj.imageTimer1);
-
-                                obj.imageTimer1 = setInterval(() => {
-                                    // Sadece SVG ekranda aktifse resmi değiştir (Performans tasarrufu)
-                                    if (!obj.classList.contains("active")) return;
-                                    
-                                    currentIndex1 = (currentIndex1 + 1) % subImages1.length;
-                                    let yeniResim1 = subImages1[currentIndex1];
-                                    imgElement1.setAttribute("href", yeniResim1);
-                                    imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", yeniResim1);
-                                }, 3000); // 3 saniyede bir değiştir
-                            }
-
-                            // ==========================================
-                            // 2. BÖLÜM: 2. SVG VEYA 2. ALAN ROTASYONU
-                            // ==========================================
-                            const imgElement2 = svgDoc.getElementById("degisen-resim-2");
-                            if (imgElement2) {
-                                // 2. SVG'de dönecek FARKLI 3 resim
-                                const subImages2 = ["resim4.jpg", "resim5.jpg", "resim6.jpg"]; 
-                                let currentIndex2 = 0;
-
-                                if(obj.imageTimer2) clearInterval(obj.imageTimer2);
-
-                                obj.imageTimer2 = setInterval(() => {
-                                    // Sadece SVG ekranda aktifse resmi değiştir (Performans tasarrufu)
-                                    if (!obj.classList.contains("active")) return;
-                                    
-                                    currentIndex2 = (currentIndex2 + 1) % subImages2.length;
-                                    let yeniResim2 = subImages2[currentIndex2];
-                                    imgElement2.setAttribute("href", yeniResim2);
-                                    imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", yeniResim2);
-                                }, 3000); // 3 saniyede bir değiştir
-                            }
-
+                            if(obj.imageTimer1) clearInterval(obj.imageTimer1);
+                            obj.imageTimer1 = setInterval(() => {
+                                if (!obj.classList.contains("active")) return;
+                                idx1 = (idx1 + 1) % subImages1.length;
+                                imgElement1.setAttribute("href", subImages1[idx1]);
+                                imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages1[idx1]);
+                            }, 3000); 
                         }
-                    } catch(e) {
-                        console.warn("SVG CORS Uyarısı:", e);
-                    }
+
+                        // --- ALAN 2 ROTASYONU ---
+                        const imgElement2 = svgDoc.getElementById("degisen-resim-2");
+                        if (imgElement2) {
+                            const subImages2 = ["resim4.jpg", "resim5.jpg", "resim6.jpg"]; 
+                            let idx2 = 0;
+
+                            // ANINDA İLK RESMİ YÜKLE (Gecikmeyi ve yanlış resmi önler)
+                            imgElement2.setAttribute("href", subImages2[0]);
+                            imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages2[0]);
+
+                            if(obj.imageTimer2) clearInterval(obj.imageTimer2);
+                            obj.imageTimer2 = setInterval(() => {
+                                if (!obj.classList.contains("active")) return;
+                                idx2 = (idx2 + 1) % subImages2.length;
+                                imgElement2.setAttribute("href", subImages2[idx2]);
+                                imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages2[idx2]);
+                            }, 3000); 
+                        }
+                    } catch(e) { console.warn("CORS hatası:", e); }
                 });
 
                 slider.appendChild(obj);
@@ -154,73 +136,47 @@
             });
 
             showSlide(0);
-        } catch (err) {
-            console.error("Başlatma hatası:", err);
-            setTimeout(initSlider, 5000);
-        }
+        } catch (err) { setTimeout(initSlider, 5000); }
     }
 
     async function showSlide(index) {
         if (slides.length === 0) return;
-
         slides.forEach(s => s.classList.remove("active"));
-        const currentSlide = slides[index];
-        currentSlide.classList.add("active");
+        slides[index].classList.add("active");
 
-        const duration = parseInt(currentSlide.dataset.duration) || 5000;
-        
+        const duration = parseInt(slides[index].dataset.duration) || 5000;
         clearTimeout(timer);
         timer = setTimeout(async () => {
             await updateCheck();
-            let next = (index + 1) >= slides.length ? 0 : index + 1;
-            showSlide(next);
+            showSlide((index + 1) >= slides.length ? 0 : index + 1);
         }, duration);
     }
 
     async function updateCheck() {
         if (isUpdating) return; 
         isUpdating = true;
-
         try {
             const resp = await fetch('settings.json?t=' + Date.now());
             const newConfig = await resp.json();
-
             if (newConfig.length !== slides.length) {
-                clearTimeout(timer);
                 initSlider();
-                isUpdating = false;
                 return;
             }
-
             let cacheBuster = Math.floor(Date.now() / 30000); 
-
             newConfig.forEach((item, i) => {
                 if (slides[i]) {
                     slides[i].dataset.duration = item.duration;
-                    
-                    if (slides[i].dataset.effect !== item.effect) {
-                        slides[i].classList.remove(slides[i].dataset.effect);
-                        slides[i].classList.add(item.effect);
-                        slides[i].dataset.effect = item.effect;
-                    }
-                    
                     let targetUrl = item.file + "?v=" + cacheBuster;
-
                     if (!slides[i].classList.contains("active") && slides[i].dataset.currentUrl !== targetUrl) {
                         slides[i].data = targetUrl;
                         slides[i].dataset.currentUrl = targetUrl;
                     }
                 }
             });
-        } catch (e) {
-            console.log("Güncelleme kontrolü başarısız.");
-        } finally {
-            isUpdating = false;
-        }
+        } catch (e) { } finally { isUpdating = false; }
     }
 
     initSlider();
 </script>
-
 </body>
 </html>
