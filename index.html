@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Dinamik Animasyon Slider - Optimize Edilmiş</title>
+    <title>Dinamik Animasyon Slider - TV Optimize</title>
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
         #slider { position: relative; width: 100vw; height: 100vh; }
@@ -16,7 +16,7 @@
             transition: all 1s ease-in-out; 
             pointer-events: none; 
             border: none; 
-            object-fit: contain; /* En-boy oranını korur */
+            object-fit: contain; /* Görselin en-boy oranını koruyarak tam ekrana sığdırır */
             
             /* TV'ler için GPU Hızlandırma ve Bellek Optimizasyonları */
             backface-visibility: hidden;
@@ -55,26 +55,26 @@
     const fsBtn = document.getElementById("fullscreen-btn");
     let slides = [];
     let timer;
-    let isUpdating = false; // Çakışmaları önlemek için bayrak
+    let isUpdating = false; 
 
+    // Tam ekran fonksiyonu
     fsBtn.addEventListener("click", () => {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(err => console.error(err));
         }
     });
 
-    // ANDROID TV OPTİMİZASYONU: Cihaz belleğini temizlemek için her 4 saatte bir sayfayı tamamen yenile
+    // ANDROID TV OPTİMİZASYONU: Cihaz belleğini tamamen temizlemek için her 4 saatte bir sayfayı yenile
     setTimeout(() => {
         window.location.reload();
     }, 4 * 60 * 60 * 1000);
 
     async function initSlider() {
         try {
-            // Sadece JSON dosyasını çekerken cache engelleniyor, SVG'lerde engellenmeyecek
             const resp = await fetch('settings.json?t=' + Date.now());
             const config = await resp.json();
 
-            // Önceki slaytların interval'larını tamamen temizle
+            // Önceki slaytların zamanlayıcılarını (interval) temizle (Memory Leak önleyici)
             slides.forEach(s => {
                 if (s.imageTimer) clearInterval(s.imageTimer);
             });
@@ -82,15 +82,19 @@
             slider.innerHTML = ""; 
             slides = [];
 
+            // İlk yüklemede de 30 saniyelik cache mantığını kullan
+            let cacheBuster = Math.floor(Date.now() / 30000);
+
             config.forEach((s) => {
                 const obj = document.createElement("object");
-                // TV belleğini korumak için '?v=Date.now()' kaldırıldı
-                obj.data = s.file; 
+                
+                let initialUrl = s.file + "?v=" + cacheBuster;
+                obj.data = initialUrl; 
                 obj.type = "image/svg+xml";
                 obj.className = `slide ${s.effect}`;
                 obj.dataset.duration = s.duration;
                 obj.dataset.effect = s.effect;
-                obj.dataset.filename = s.file;
+                obj.dataset.currentUrl = initialUrl; // Güncelleme kontrolü için sakla
 
                 // SVG yüklendiğinde çalışacak kod
                 obj.addEventListener('load', function() {
@@ -103,11 +107,10 @@
                                 const subImages = ["resim1.jpg", "resim2.jpg", "resim3.jpg", "resim4.jpg", "resim5.jpg", "resim6.jpg"]; 
                                 let currentIndex = 0;
 
-                                // MEMORY LEAK ÖNLEME: Eski interval varsa mutlaka temizle
                                 if(obj.imageTimer) clearInterval(obj.imageTimer);
 
                                 obj.imageTimer = setInterval(() => {
-                                    // OPTİMİZASYON: Slayt ekranda (active) değilse resim değiştirme işlemi yapma!
+                                    // Slayt aktif değilse arka planda resim değiştirip RAM'i yorma
                                     if (!obj.classList.contains("active")) return;
 
                                     currentIndex = (currentIndex + 1) % subImages.length;
@@ -156,10 +159,11 @@
         isUpdating = true;
 
         try {
+            // Ayarları anlık çek
             const resp = await fetch('settings.json?t=' + Date.now());
             const newConfig = await resp.json();
 
-            // Eğer slayt sayısı değiştiyse komple baştan kur
+            // Slayt eklendi/çıkarıldı ise sistemi baştan başlat
             if (newConfig.length !== slides.length) {
                 clearTimeout(timer);
                 initSlider();
@@ -167,21 +171,27 @@
                 return;
             }
 
+            // AKILLI ÖNBELLEK: Sadece 30 saniyede bir değişen numara üretir
+            let cacheBuster = Math.floor(Date.now() / 30000); 
+
             newConfig.forEach((item, i) => {
                 if (slides[i]) {
                     slides[i].dataset.duration = item.duration;
                     
-                    // Efekt Güncelleme
+                    // Efekt Güncellemesi
                     if (slides[i].dataset.effect !== item.effect) {
                         slides[i].classList.remove(slides[i].dataset.effect);
                         slides[i].classList.add(item.effect);
                         slides[i].dataset.effect = item.effect;
                     }
                     
-                    // Dosya Adı Güncelleme (Gereksiz render'ı engellemek için sadece pasifken ve gerçekten değiştiyse)
-                    if (!slides[i].classList.contains("active") && slides[i].dataset.filename !== item.file) {
-                        slides[i].data = item.file;
-                        slides[i].dataset.filename = item.file;
+                    // Dosya Adı ve SVG İçerik Güncellemesi
+                    let targetUrl = item.file + "?v=" + cacheBuster;
+
+                    // Sadece pasif slaytta ve URL (30 saniyelik periyot) değiştiyse güncelle
+                    if (!slides[i].classList.contains("active") && slides[i].dataset.currentUrl !== targetUrl) {
+                        slides[i].data = targetUrl;
+                        slides[i].dataset.currentUrl = targetUrl;
                     }
                 }
             });
@@ -192,7 +202,7 @@
         }
     }
 
-    // Uygulamayı başlat
+    // Sistemi başlat
     initSlider();
 </script>
 
