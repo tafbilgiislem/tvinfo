@@ -107,7 +107,7 @@
                                 idx1 = (idx1 + 1) % subImages1.length;
                                 imgElement1.setAttribute("href", subImages1[idx1]);
                                 imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages1[idx1]);
-                            }, 1500); 
+                            }, 1000); 
                         }
 
                         // --- ALAN 2 ROTASYONU ---
@@ -126,7 +126,7 @@
                                 idx2 = (idx2 + 1) % subImages2.length;
                                 imgElement2.setAttribute("href", subImages2[idx2]);
                                 imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages2[idx2]);
-                            }, 1500); 
+                            }, 1000); 
                         }
                     } catch(e) { console.warn("CORS hatası:", e); }
                 });
