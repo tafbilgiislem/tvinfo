@@ -16,7 +16,7 @@
     <div class="swiper mySwiper"><div class="swiper-wrapper" id="slide-container"></div></div>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const SWIPER_CONFIG = { speed: 1500, effect: 'cube' };
+        const SWIPER_CONFIG = { speed: 1500, effect: 'cards' };
         let currentSettingsString = ""; let swiperInstance = null;
 
         setTimeout(() => { const d = document.documentElement; const r = d.requestFullscreen || d.webkitRequestFullScreen || d.mozRequestFullScreen || d.msRequestFullscreen; if (r) r.call(d).catch(e=>{}); }, 5000);
