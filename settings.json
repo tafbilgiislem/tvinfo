@@ -1,7 +1,7 @@
 [
   {
     "file": "slayt.svg",
-    "effect": "cube",
+    "effect": "coverflow",
     "duration": 7000
   },
   {
@@ -11,8 +11,8 @@
   },
   {
     "file": "slayt.svg",
-    "effect": "cube",
-    "duration": 5000
+    "effect": "coverflow",
+    "duration": 7000
   },
   {
     "file": "duyuru.svg",
