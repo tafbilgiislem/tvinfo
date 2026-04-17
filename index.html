@@ -2,181 +2,83 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Dinamik Animasyon Slider - TV Optimize (Çift Alan)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Ekran Oynatıcı - Swiper TV Optimize V44</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
-        #slider { position: relative; width: 100vw; height: 100vh; }
-        
-        /* Animasyon Efektleri ve TV (GPU) Hızlandırma */
-        .slide { 
-            position: absolute; 
-            width: 100%; 
-            height: 100%; 
-            opacity: 0; 
-            transition: all 1s ease-in-out; 
-            pointer-events: none; 
-            border: none; 
-            object-fit: contain; 
-            
-            /* TV Bellek Optimizasyonları */
-            backface-visibility: hidden;
-            perspective: 1000px;
-            transform: translateZ(0); 
-            will-change: opacity, transform; 
-        }
-        .slide.active { opacity: 1; z-index: 10; }
-        
-        /* Efekt Sınıfları */
-        .fade{opacity:0;}.fade.active{opacity:1;}
-        .slide-left{transform:translateX(100%);opacity:0;}.slide-left.active{transform:translateX(0);opacity:1;transition:all 1s ease-in-out;}
-        .zoom{transform:scale(0.5);opacity:0;}.zoom.active{transform:scale(1);opacity:1;transition:all 2.9s ease-in-out;}
-        .slide-up { transform:translateY(100%); opacity:0; } .slide-up.active { transform:translateY(0); opacity:1; transition:all 1s ease-in-out; }
-        .rotate-zoom { transform:rotate(-180deg) scale(0.5); opacity:0; } .rotate-zoom.active { transform:rotate(0deg) scale(1); opacity:1; transition:all 1.5s ease-in-out; }
-        .circle{clip-path: circle(0% at 50% 50%);opacity:0;}.circle.active{clip-path: circle(100% at 50% 50%);opacity:1;transition: all 4s ease;}
-        .wave{transform: translateY(100%) rotate(10deg);opacity:0;}.wave.active{transform: translateY(0) rotate(0);opacity:1;transition: all 2s ease;}
-        .curtain{clip-path: inset(0 50% 0 50%);opacity:0;}.curtain.active{clip-path: inset(0 0 0 0);opacity:1;transition: all 5s ease;}
-        .spin-zoom{transform: scale(0.2) rotate(-360deg);opacity:0;}.spin-zoom.active{transform: scale(1) rotate(0);opacity:1;transition: all 1.9s ease;}
-        .rotate3d {transform: rotate3d(1,1,0,90deg);opacity:0;}.rotate3d.active{transform: rotate3d(0,0,0,0deg);opacity:1;transition: all 1.9s ease;}
-        .cube{transform:rotateY(180deg) scale(.5);opacity:0;}.cube.active{transform:rotateY(0) scale(1);opacity:1;transition:1.5s;}
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+        .swiper { width: 100%; height: 100%; }
+        .swiper-slide { display: flex; align-items: center; justify-content: center; background: #000; }
+        .swiper-slide object { width: 100%; height: 100%; object-fit: contain; pointer-events: none; border: none; }
     </style>
 </head>
 <body>
+    <div class="swiper mySwiper"><div class="swiper-wrapper" id="slide-container"></div></div>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const SWIPER_CONFIG = { speed: 1500, effect: 'cube' };
+        let currentSettingsString = ""; let swiperInstance = null;
 
-<div id="slider"></div>
+        setTimeout(() => { const d = document.documentElement; const r = d.requestFullscreen || d.webkitRequestFullScreen || d.mozRequestFullScreen || d.msRequestFullscreen; if (r) r.call(d).catch(e=>{}); }, 5000);
+        setTimeout(() => window.location.reload(), 4 * 60 * 60 * 1000);
 
-<script>
-    const slider = document.getElementById("slider");
-    let slides = [];
-    let timer;
-    let isUpdating = false; 
+        async function initSlider() {
+            try {
+                let cacheBuster = Math.floor(Date.now() / 30000);
+                const setRes = await fetch('settings.json?t=' + cacheBuster);
+                const settings = await setRes.json();
+                currentSettingsString = JSON.stringify(settings);
+                
+                const container = document.getElementById('slide-container'); container.innerHTML = ""; 
+                
+                for (let slide of settings) {
+                    const slideDiv = document.createElement('div');
+                    slideDiv.className = 'swiper-slide';
+                    slideDiv.setAttribute('data-swiper-autoplay', slide.duration || 5000);
+                    
+                    const obj = document.createElement("object");
+                    obj.data = slide.file + '?v=' + cacheBuster; obj.type = "image/svg+xml";
 
-    // OTOMATİK TAM EKRAN: 5 Saniye Sonra
-    setTimeout(() => {
-        const docEl = document.documentElement;
-        const requestMethod = docEl.requestFullscreen || docEl.webkitRequestFullScreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
-        if (requestMethod) {
-            requestMethod.call(docEl).catch(err => console.warn("Tam ekran hatası:", err));
-        }
-    }, 5000);
-
-    // ANDROID TV: 4 Saatte bir belleği temizle
-    setTimeout(() => window.location.reload(), 4 * 60 * 60 * 1000);
-
-    async function initSlider() {
-        try {
-            const resp = await fetch('settings.json?t=' + Date.now());
-            const config = await resp.json();
-
-            // Eski zamanlayıcıları temizle
-            slides.forEach(s => {
-                if (s.imageTimer1) clearInterval(s.imageTimer1);
-                if (s.imageTimer2) clearInterval(s.imageTimer2);
-            });
-
-            slider.innerHTML = ""; 
-            slides = [];
-            let cacheBuster = Math.floor(Date.now() / 30000);
-
-            config.forEach((s) => {
-                const obj = document.createElement("object");
-                let initialUrl = s.file + "?v=" + cacheBuster;
-                obj.data = initialUrl; 
-                obj.type = "image/svg+xml";
-                obj.className = `slide ${s.effect}`;
-                obj.dataset.duration = s.duration;
-                obj.dataset.currentUrl = initialUrl;
-
-                obj.addEventListener('load', function() {
-                    try {
-                        const svgDoc = obj.contentDocument;
-                        if (!svgDoc) return;
-
-                        // --- ALAN 1 ROTASYONU ---
-                        const imgElement1 = svgDoc.getElementById("degisen-resim-1");
-                        if (imgElement1) {
-                            const subImages1 = ["resim1.jpg", "resim2.jpg", "resim3.jpg"]; 
-                            let idx1 = 0;
-                            
-                            // ANINDA İLK RESMİ YÜKLE
-                            imgElement1.setAttribute("href", subImages1[0]);
-                            imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages1[0]);
-
-                            if(obj.imageTimer1) clearInterval(obj.imageTimer1);
-                            obj.imageTimer1 = setInterval(() => {
-                                if (!obj.classList.contains("active")) return;
-                                idx1 = (idx1 + 1) % subImages1.length;
-                                imgElement1.setAttribute("href", subImages1[idx1]);
-                                imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages1[idx1]);
-                            }, 3000); 
-                        }
-
-                        // --- ALAN 2 ROTASYONU ---
-                        const imgElement2 = svgDoc.getElementById("degisen-resim-2");
-                        if (imgElement2) {
-                            const subImages2 = ["resim4.jpg", "resim5.jpg", "resim6.jpg"]; 
-                            let idx2 = 0;
-
-                            // ANINDA İLK RESMİ YÜKLE (Gecikmeyi ve yanlış resmi önler)
-                            imgElement2.setAttribute("href", subImages2[0]);
-                            imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages2[0]);
-
-                            if(obj.imageTimer2) clearInterval(obj.imageTimer2);
-                            obj.imageTimer2 = setInterval(() => {
-                                if (!obj.classList.contains("active")) return;
-                                idx2 = (idx2 + 1) % subImages2.length;
-                                imgElement2.setAttribute("href", subImages2[idx2]);
-                                imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages2[idx2]);
-                            }, 3000); 
-                        }
-                    } catch(e) { console.warn("CORS hatası:", e); }
-                });
-
-                slider.appendChild(obj);
-                slides.push(obj);
-            });
-
-            showSlide(0);
-        } catch (err) { setTimeout(initSlider, 5000); }
-    }
-
-    async function showSlide(index) {
-        if (slides.length === 0) return;
-        slides.forEach(s => s.classList.remove("active"));
-        slides[index].classList.add("active");
-
-        const duration = parseInt(slides[index].dataset.duration) || 5000;
-        clearTimeout(timer);
-        timer = setTimeout(async () => {
-            await updateCheck();
-            showSlide((index + 1) >= slides.length ? 0 : index + 1);
-        }, duration);
-    }
-
-    async function updateCheck() {
-        if (isUpdating) return; 
-        isUpdating = true;
-        try {
-            const resp = await fetch('settings.json?t=' + Date.now());
-            const newConfig = await resp.json();
-            if (newConfig.length !== slides.length) {
-                initSlider();
-                return;
-            }
-            let cacheBuster = Math.floor(Date.now() / 30000); 
-            newConfig.forEach((item, i) => {
-                if (slides[i]) {
-                    slides[i].dataset.duration = item.duration;
-                    let targetUrl = item.file + "?v=" + cacheBuster;
-                    if (!slides[i].classList.contains("active") && slides[i].dataset.currentUrl !== targetUrl) {
-                        slides[i].data = targetUrl;
-                        slides[i].dataset.currentUrl = targetUrl;
-                    }
+                    obj.addEventListener('load', function() {
+                        try {
+                            const svgDoc = obj.contentDocument; if (!svgDoc) return;
+                            const setupRotation = (id, images) => {
+                                const imgEl = svgDoc.getElementById(id);
+                                if (imgEl) {
+                                    let idx = 0; imgEl.setAttribute("href", images[0]); imgEl.setAttributeNS("http://www.w3.org/1999/xlink", "href", images[0]);
+                                    setInterval(() => {
+                                        if (settings.length > 1 && !slideDiv.classList.contains("swiper-slide-active") && !slideDiv.classList.contains("swiper-slide-duplicate-active")) return;
+                                        idx = (idx + 1) % images.length; imgEl.setAttribute("href", images[idx]); imgEl.setAttributeNS("http://www.w3.org/1999/xlink", "href", images[idx]);
+                                    }, 3000); 
+                                }
+                            };
+                            setupRotation("degisen-resim-1", ["resim1.jpg", "resim2.jpg", "resim3.jpg"]);
+                            setupRotation("degisen-resim-2", ["resim4.jpg", "resim5.jpg", "resim6.jpg"]);
+                        } catch(e) {}
+                    });
+                    slideDiv.appendChild(obj); container.appendChild(slideDiv);
                 }
-            });
-        } catch (e) { } finally { isUpdating = false; }
-    }
 
-    initSlider();
-</script>
+                setTimeout(() => {
+                    swiperInstance = new Swiper('.mySwiper', {
+                        effect: SWIPER_CONFIG.effect, speed: SWIPER_CONFIG.speed, grabCursor: true, loop: settings.length > 1, observer: true, observeParents: true,
+                        autoplay: settings.length > 1 ? { delay: 5000, disableOnInteraction: false } : false,
+                        cubeEffect: { shadow: true, slideShadows: true, shadowOffset: 20, shadowScale: 0.94 },
+                        coverflowEffect: { rotate: 50, stretch: 0, depth: 100, modifier: 1, slideShadows: true },
+                        cardsEffect: { slideShadows: true }
+                    });
+                }, 100);
+                
+                setInterval(async () => {
+                    try {
+                        const r = await fetch('settings.json?t=' + Math.floor(Date.now() / 30000));
+                        const nConf = await r.json();
+                        if (JSON.stringify(nConf) !== currentSettingsString) window.location.reload();
+                    } catch (e) {}
+                }, 10000);
+            } catch (error) { setTimeout(initSlider, 5000); }
+        }
+        initSlider();
+    </script>
 </body>
 </html>
