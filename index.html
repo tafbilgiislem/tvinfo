@@ -38,12 +38,61 @@
         .spin-zoom{transform: scale(0.2) rotate(-360deg);opacity:0;}.spin-zoom.active{transform: scale(1) rotate(0);opacity:1;transition: all 1.9s ease;}
         .rotate3d {transform: rotate3d(1,1,0,90deg);opacity:0;}.rotate3d.active{transform: rotate3d(0,0,0,0deg);opacity:1;transition: all 1.9s ease;}
         .cube{transform:rotateY(180deg) scale(.5);opacity:0;}.cube.active{transform:rotateY(0) scale(1);opacity:1;transition:1.5s;}
+
+        /* --- KÖŞE ALANLARI (SOL VİDEO - SAĞ RESİM) TASARIMI --- */
+        .overlay-box {
+            position: absolute;
+            bottom: 4%;         /* Ekranın altından %4 yukarıda */
+            width: 22vw;        /* Ekran genişliğine göre otomatik boyut */
+            height: 22vw;       /* Kare görünüm için genişlik ile aynı */
+            z-index: 100;       /* Ana slaytların üstünde görünmesini sağlar */
+            border: 3px solid #fff; 
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            background-color: #000; /* Arkadan slayt sızmasını engeller */
+        }
+
+        /* SOL KÖŞE (YOUTUBE VİDEOSU) İÇİN DİKDÖRTGEN BOYUT */
+        #sabit-alan-sol { 
+            left: 4%; 
+            width: 32vw;   /* Yayını daha geniş yaptık */
+            height: 18vw;  /* 16:9 YouTube formatına uygun dikdörtgen yaptık */
+        }  
+
+        /* SAĞ KÖŞE (RESİMLER) İÇİN DİKEY (AFİŞ) BOYUT */
+        #sabit-alan-sag { 
+            right: 4%; 
+            width: 18vw;   /* Resim kutusunu biraz daralttık */
+            height: 26vw;  /* Dikey (afiş tarzı) olması için boyunu uzattık */
+        }
+
+        .overlay-box video, .overlay-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Resmi/Videoyu kutuya tam sığdırır */
+            transition: opacity 0.6s ease; /* Resim geçişlerindeki yumuşaklık */
+        }
+
     </style>
 </head>
 <body>
 
 <div id="slider"></div>
+<div id="sabit-alan-sol" class="overlay-box">
+    <iframe 
+        width="100%" 
+        height="100%" 
+        src="https://www.youtube.com/embed/Vt1u0p9ZAsc?autoplay=1&mute=1&controls=0" 
+        frameborder="0" 
+        allow="autoplay; encrypted-media" 
+        style="pointer-events: none;">
+    </iframe>
+</div>
 
+<div id="sabit-alan-sag" class="overlay-box">
+    <img id="sag-resim" src="" alt="Dinamik Sağ">
+</div>
 <script>
     const slider = document.getElementById("slider");
     let slides = [];
@@ -177,6 +226,31 @@
     }
 
     initSlider();
+// ==========================================
+// SAĞ KÖŞE: BAĞIMSIZ GÖRSEL ROTASYONU
+// ==========================================
+const sagResimler = ["sag1.jpg", "sag2.jpg", "sag3.jpg"]; // Sağda dönecek kendi resimlerinizi yazın
+const sagImgEl = document.getElementById("sag-resim");
+let sagIdx = 0;
+
+if (sagResimler.length > 0) {
+    // İlk resmi hemen yükle
+    sagImgEl.src = sagResimler[0];
+    
+    // Her 5 saniyede bir değiştir (5000 milisaniye)
+    setInterval(() => {
+        sagImgEl.style.opacity = 0; // Şeffaflaştır (Işığı kapat)
+        
+        setTimeout(() => {
+            // Şeffafken resmi değiştir
+            sagIdx = (sagIdx + 1) % sagResimler.length;
+            sagImgEl.src = sagResimler[sagIdx];
+            
+            // Görünür yap (Işığı aç)
+            sagImgEl.style.opacity = 1; 
+        }, 600); // 0.6 saniye bekle
+    }, 5000);
+}
 </script>
 </body>
 </html>
