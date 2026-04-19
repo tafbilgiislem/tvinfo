@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <meta charset="UTF-8">
     <title>Dinamik Animasyon Slider - TV Optimize (Çift Alan)</title>
     <style>
@@ -80,14 +81,7 @@
 
 <div id="slider"></div>
 <div id="sabit-alan-sol" class="overlay-box">
-    <iframe 
-        width="100%" 
-        height="100%" 
-        src="https://www.youtube.com/embed/6N8_r2uwLEc?autoplay=1&mute=1&controls=0" 
-        frameborder="0" 
-        allow="autoplay; encrypted-media" 
-        style="pointer-events: none;">
-    </iframe>
+    <video id="sol-video" autoplay loop muted playsinline></video>
 </div>
 
 <div id="sabit-alan-sag" class="overlay-box">
@@ -251,6 +245,51 @@ if (sagResimler.length > 0) {
         }, 600); // 0.6 saniye bekle
     }, 5000);
 }
+// ==========================================
+// SOL KÖŞE: M3U8 (HLS) YAYIN SİSTEMİ
+// ==========================================
+const videoSol = document.getElementById('sol-video');
+const m3u8Link = 'https://tv-trtspor1.medya.trt.com.tr/master_720.m3u8'; // BURAYA KENDİ M3U8 LİNKİNİZİ YAPIŞTIRIN
+
+if (Hls.isSupported()) {
+    // Chrome, Android TV, Windows vb. cihazlar için HLS.js çalıştırır
+    const hls = new Hls({
+        debug: false,
+        maxBufferLength: 30 // Bellek şişmesini önlemek için tampon belleği sınırlar
+    });
+    
+    hls.loadSource(m3u8Link);
+    hls.attachMedia(videoSol);
+    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        videoSol.play().catch(e => console.log("Otomatik oynatma engellendi:", e));
+    });
+    
+    // Yayın koparsa otomatik yeniden bağlanma mantığı
+    hls.on(Hls.Events.ERROR, function (event, data) {
+        if (data.fatal) {
+            switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                    console.log("Ağ hatası, tekrar deneniyor...");
+                    hls.startLoad();
+                    break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                    console.log("Medya hatası, kurtarılmaya çalışılıyor...");
+                    hls.recoverMediaError();
+                    break;
+                default:
+                    hls.destroy();
+                    break;
+            }
+        }
+    });
+} 
+// Safari / Apple TV gibi m3u8'i doğal destekleyen cihazlar için yedek plan:
+else if (videoSol.canPlayType('application/vnd.apple.mpegurl')) {
+    videoSol.src = m3u8Link;
+    videoSol.addEventListener('loadedmetadata', function() {
+        videoSol.play();
+    });
+}    
 </script>
 </body>
 </html>
