@@ -148,15 +148,29 @@
 <div id="toast-container"></div>
 
 <div id="context-menu">
-    <div class="ctx-item" onclick="if(selectedEl) window.cloneElement(selectedEl.id); window.closeCtx();"><div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-copy"></i><span>Kopyala</span></div><span class="kbd">Alt+Sürükle</span></div>
+    <div class="ctx-item" onclick="if(selectedEl) { window.cloneElement(selectedEl.id); } window.closeCtx();">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-copy"></i><span>Kopyala</span></div><span class="kbd">Alt+Sürükle</span>
+    </div>
     <div style="height:1px; background:var(--border); margin:4px 0;"></div>
-    <div class="ctx-item" onclick="if(selectedEl) window.moveLayer(selectedEl.id, 'top'); window.closeCtx();"><div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-double-up"></i><span>En Öne Getir</span></div></div>
-    <div class="ctx-item" onclick="if(selectedEl) window.moveLayer(selectedEl.id, 1); window.closeCtx();"><div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-up"></i><span>Bir Öne Getir</span></div></div>
-    <div class="ctx-item" onclick="if(selectedEl) window.moveLayer(selectedEl.id, -1); window.closeCtx();"><div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-down"></i><span>Bir Arkaya Gönder</span></div></div>
-    <div class="ctx-item" onclick="if(selectedEl) window.moveLayer(selectedEl.id, 'bottom'); window.closeCtx();"><div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-double-down"></i><span>En Arkaya Gönder</span></div></div>
+    <div class="ctx-item" onclick="if(selectedEl) { window.moveLayer(selectedEl.id, 'top'); } window.closeCtx();">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-double-up"></i><span>En Öne Getir</span></div>
+    </div>
+    <div class="ctx-item" onclick="if(selectedEl) { window.moveLayer(selectedEl.id, 1); } window.closeCtx();">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-up"></i><span>Bir Öne Getir</span></div>
+    </div>
+    <div class="ctx-item" onclick="if(selectedEl) { window.moveLayer(selectedEl.id, -1); } window.closeCtx();">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-down"></i><span>Bir Arkaya Gönder</span></div>
+    </div>
+    <div class="ctx-item" onclick="if(selectedEl) { window.moveLayer(selectedEl.id, 'bottom'); } window.closeCtx();">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-caret-double-down"></i><span>En Arkaya Gönder</span></div>
+    </div>
     <div style="height:1px; background:var(--border); margin:4px 0;"></div>
-    <div class="ctx-item" onclick="if(selectedEl) window.toggleLock(selectedEl.id); window.closeCtx();"><div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-lock-key" id="ctx-lock-icon"></i><span id="ctx-lock-text">Kilitle</span></div></div>
-    <div class="ctx-item danger" onclick="if(selectedEl && confirm('Silinecek?')){ selectedEl.remove(); selectedEl=null; window.saveState(); window.renderEditor(); document.getElementById('control-layer').innerHTML=''; } window.closeCtx();"><div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-trash"></i><span>Sil</span></div><span class="kbd">Del</span></div>
+    <div class="ctx-item" onclick="if(selectedEl) { window.toggleLock(selectedEl.id); } window.closeCtx();">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-lock-key" id="ctx-lock-icon"></i><span id="ctx-lock-text">Kilitle</span></div>
+    </div>
+    <div class="ctx-item danger" onclick="if(selectedEl && confirm('Silinecek?')){ selectedEl.remove(); selectedEl=null; window.saveState(); window.renderEditor(); document.getElementById('control-layer').innerHTML=''; } window.closeCtx();">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ph ph-trash"></i><span>Sil</span></div><span class="kbd">Del</span>
+    </div>
 </div>
 
 <div id="hotkey-modal" class="modal-overlay">
@@ -201,7 +215,9 @@
 
 <div id="login-screen">
     <div class="login-card">
-        <h2 style="margin-top:0; color:white; display:flex; align-items:center; justify-content:center; gap:10px;"><i class="ph ph-shield-check" style="color:var(--accent); font-size:32px;"></i> Pro Studio V42</h2>
+        <h2 style="margin-top:0; color:white; display:flex; align-items:center; justify-content:center; gap:10px;">
+            <i class="ph ph-shield-check" style="color:var(--accent); font-size:32px;"></i> Pro Studio V42
+        </h2>
         <div style="font-size:12px; color:#94a3b8; margin-bottom:20px;">Lütfen Cloudflare Worker şifrenizi girin.</div>
         <input type="password" id="passInput" placeholder="Sunucu Şifresi">
         <button id="loginBtn" onclick="window.login()">Sunucuya Bağlan</button>
@@ -366,10 +382,14 @@
 <script>
     const WORKER_URL = "https://tvinfoeditor.tafbilgiislem.workers.dev"; 
     
-    let SHA_KEY = "", SESSION_PASS = "", settingsData = [], settingsSha = "";
-    let indexHtmlContent = "", indexHtmlSha = "";
+    let SHA_KEY = "";
+    let SESSION_PASS = "";
+    let settingsData = [];
+    let settingsSha = "";
+    let indexHtmlContent = "";
+    let indexHtmlSha = "";
 
-    // TOAST BİLDİRİM
+    // TOAST BİLDİRİM FONKSİYONU
     window.showToast = function(msg, type = 'success') {
         const container = document.getElementById('toast-container');
         if(!container) return;
@@ -385,32 +405,83 @@
         }, 3000);
     };
 
-    window.setD = function(el, key, val) { if(el) el.setAttribute('data-' + key, val); };
-    window.getD = function(el, key) { return el ? el.getAttribute('data-' + key) : null; };
+    window.setD = function(el, key, val) { 
+        if(el) {
+            el.setAttribute('data-' + key, val); 
+        }
+    };
+
+    window.getD = function(el, key) { 
+        return el ? el.getAttribute('data-' + key) : null; 
+    };
 
     let recentColors = ['#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6', '#ffffff'];
+
     window.addRecentColor = function(c) { 
         if(!recentColors.includes(c)) { 
             recentColors.unshift(c); 
-            if(recentColors.length > 10) recentColors.pop(); 
-            if(selectedEl) window.renderProperties(); 
+            if(recentColors.length > 10) {
+                recentColors.pop(); 
+            }
+            if(selectedEl) {
+                window.renderProperties(); 
+            }
         } 
     };
 
-    function safeColor(c) { if(!c) return "#ffffff"; if(c.length === 4 && c.startsWith('#')) return "#" + c[1] + c[1] + c[2] + c[2] + c[3] + c[3]; return c.startsWith('#') && c.length === 7 ? c : "#ffffff"; }
+    function safeColor(c) { 
+        if(!c) return "#ffffff"; 
+        if(c.length === 4 && c.startsWith('#')) {
+            return "#" + c[1] + c[1] + c[2] + c[2] + c[3] + c[3]; 
+        }
+        return c.startsWith('#') && c.length === 7 ? c : "#ffffff"; 
+    }
 
-    let selectedEl = null, resizingEl = null, rotatingEl = null, radiusingEl = null, activeHandle = null, offset = {x:0, y:0}, startP = {x:0, y:0}, startData = {}, isModified = false;
-    let clipboard = null, currentZoom = 1, panX = 0, panY = 0, historyStack = [], historyIndex = -1;
-    let isDrawingMode = false, isDrawing = false, currentPath = null, pathData = "", isDraggingGuide = false, currentGuide = null, isDraggingElement = false, isSpacePressed = false, isPanning = false, panStart = {x:0, y:0}, panOffsetStart = {x:0, y:0};
+    let selectedEl = null;
+    let resizingEl = null;
+    let rotatingEl = null;
+    let radiusingEl = null;
+    let activeHandle = null;
+    let offset = {x:0, y:0};
+    let startP = {x:0, y:0};
+    let startData = {};
+    let isModified = false;
+    let clipboard = null;
+    let currentZoom = 1;
+    let panX = 0;
+    let panY = 0;
+    let historyStack = [];
+    let historyIndex = -1;
+    let isDrawingMode = false;
+    let isDrawing = false;
+    let currentPath = null;
+    let pathData = "";
+    let isDraggingGuide = false;
+    let currentGuide = null;
+    let isDraggingElement = false;
+    let isSpacePressed = false;
+    let isPanning = false;
+    let panStart = {x:0, y:0};
+    let panOffsetStart = {x:0, y:0};
 
     window.updateEditorUI = null;
 
-    // FONT KÜTÜPHANESİ
     const googleFonts = [
-        { name: "Varsayılan", val: "sans-serif" }, { name: "Roboto", val: "'Roboto', sans-serif" }, { name: "Montserrat", val: "'Montserrat', sans-serif" }, { name: "Poppins", val: "'Poppins', sans-serif" }, { name: "Open Sans", val: "'Open Sans', sans-serif" }, { name: "Lato", val: "'Lato', sans-serif" }, { name: "Merriweather", val: "'Merriweather', serif" }, { name: "Nunito", val: "'Nunito', sans-serif" }, { name: "Oswald", val: "'Oswald', sans-serif" }, { name: "Pacifico", val: "'Pacifico', cursive" }, { name: "Playfair Display", val: "'Playfair Display', serif" }, { name: "Raleway", val: "'Raleway', sans-serif" }, { name: "Ubuntu", val: "'Ubuntu', sans-serif" }
+        { name: "Varsayılan", val: "sans-serif" }, 
+        { name: "Roboto", val: "'Roboto', sans-serif" }, 
+        { name: "Montserrat", val: "'Montserrat', sans-serif" }, 
+        { name: "Poppins", val: "'Poppins', sans-serif" }, 
+        { name: "Open Sans", val: "'Open Sans', sans-serif" }, 
+        { name: "Lato", val: "'Lato', sans-serif" }, 
+        { name: "Merriweather", val: "'Merriweather', serif" }, 
+        { name: "Nunito", val: "'Nunito', sans-serif" }, 
+        { name: "Oswald", val: "'Oswald', sans-serif" }, 
+        { name: "Pacifico", val: "'Pacifico', cursive" }, 
+        { name: "Playfair Display", val: "'Playfair Display', serif" }, 
+        { name: "Raleway", val: "'Raleway', sans-serif" }, 
+        { name: "Ubuntu", val: "'Ubuntu', sans-serif" }
     ];
 
-    // HAZIR İKON ARŞİVİ (Vektörel Yollar)
     const iconDictionary = {
         "star": "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z",
         "heart": "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
@@ -434,16 +505,18 @@
             div.className = "icon-item";
             div.title = key;
             div.innerHTML = `<svg viewBox="0 0 24 24"><path d="${iconDictionary[key]}"></path></svg>`;
-            div.onclick = () => window.addReadyIcon(key);
+            div.onclick = () => { window.addReadyIcon(key); };
             grid.appendChild(div);
         });
     };
 
     window.addReadyIcon = function(key) {
-        const svg = document.querySelector('#canvas-inner svg'); if(!svg) return; 
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if(!svg) return; 
         const center = window.getCanvasCenter();
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.id = "icon_" + Date.now(); g.setAttribute("class", "duzenlenebilir"); 
+        g.id = "icon_" + Date.now(); 
+        g.setAttribute("class", "duzenlenebilir"); 
         
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", iconDictionary[key]);
@@ -453,8 +526,13 @@
         window.setD(g, 'solid-color', "#10b981");
         
         g.appendChild(path);
-        svg.appendChild(g); selectedEl = g; 
-        window.saveState(); window.setupLayers(); window.updateEditorUI(g); window.renderEditor();
+        svg.appendChild(g); 
+        selectedEl = g; 
+        
+        window.saveState(); 
+        window.setupLayers(); 
+        window.updateEditorUI(g); 
+        window.renderEditor();
         window.showToast("İkon Eklendi!");
     };
 
@@ -462,14 +540,26 @@
         const svg = document.querySelector('#canvas-inner svg');
         if(!svg) return { cx: 960, cy: 540 };
         let w = 1920, h = 1080;
-        if (svg.hasAttribute('viewBox')) { const vb = svg.getAttribute('viewBox').split(/\s+|,/); if(vb.length >= 4) { w = parseFloat(vb[2]); h = parseFloat(vb[3]); } }
+        if (svg.hasAttribute('viewBox')) { 
+            const vb = svg.getAttribute('viewBox').split(/\s+|,/); 
+            if(vb.length >= 4) { 
+                w = parseFloat(vb[2]); 
+                h = parseFloat(vb[3]); 
+            } 
+        }
         return { cx: w / 2, cy: h / 2 };
     };
 
     window.login = async function() {
-        if (WORKER_URL === "") { window.showToast("Worker URL eksik!", "error"); return; }
+        if (WORKER_URL === "") { 
+            window.showToast("Worker URL eksik!", "error"); 
+            return; 
+        }
         const passVal = document.getElementById('passInput').value;
-        if(!passVal) { window.showToast("Şifrenizi girin!", "error"); return; }
+        if(!passVal) { 
+            window.showToast("Şifrenizi girin!", "error"); 
+            return; 
+        }
         SESSION_PASS = passVal; 
         await window.loadSettings();
         await window.loadIndexHtml();
@@ -477,10 +567,17 @@
         window.renderIconPanel();
     };
     
-    document.getElementById('passInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') window.login(); });
-    document.getElementById('file-selector').addEventListener('change', async () => { await window.loadSlide(); window.updateSettingsUI(); });
+    document.getElementById('passInput').addEventListener('keypress', (e) => { 
+        if(e.key === 'Enter') {
+            window.login(); 
+        }
+    });
 
-    // --- Otomatik Metin Modülü ---
+    document.getElementById('file-selector').addEventListener('change', async () => { 
+        await window.loadSlide(); 
+        window.updateSettingsUI(); 
+    });
+
     window.refreshAutoTextFields = function() {
         const list = document.getElementById('auto-fields-list');
         const svg = document.querySelector('#canvas-inner svg');
@@ -519,11 +616,14 @@
         window.changeSetting(id, 'raw-text', val);
         if(selectedEl && selectedEl.id === id) {
             const inputs = document.querySelectorAll('input[oninput*="raw-text"]');
-            inputs.forEach(input => { if(!input.getAttribute('oninput').includes('updateVarValue')) input.value = val; });
+            inputs.forEach(input => { 
+                if(!input.getAttribute('oninput').includes('updateVarValue')) {
+                    input.value = val; 
+                }
+            });
         }
     };
 
-    // --- JSON Ayarları Modülü ---
     window.loadSettings = async function() {
         try {
             const res = await fetch(WORKER_URL, { headers: {"X-Auth-Key": SESSION_PASS, "X-File-Name": "settings.json"} });
@@ -531,20 +631,33 @@
                 const data = await res.json();
                 settingsSha = data.sha || (data.content && data.content.sha) || "";
                 settingsData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            } else { settingsData = [ {file: "slayt.svg", effect: "fade", duration: 5000} ]; }
+            } else { 
+                settingsData = [ {file: "slayt.svg", effect: "fade", duration: 5000} ]; 
+            }
             window.updateSettingsUI();
-        } catch (e) { settingsData = []; window.updateSettingsUI(); }
+        } catch (e) { 
+            settingsData = []; 
+            window.updateSettingsUI(); 
+        }
     };
 
     window.updateSettingsUI = function() {
         const currentFile = document.getElementById('file-selector').value;
         const slideConfig = settingsData.find(s => s.file === currentFile);
-        if (slideConfig) { document.getElementById('slide-time').value = slideConfig.duration || 3000; document.getElementById('slide-effect').value = slideConfig.effect || 'fade'; } 
-        else { document.getElementById('slide-time').value = 3000; document.getElementById('slide-effect').value = 'fade'; }
+        if (slideConfig) { 
+            document.getElementById('slide-time').value = slideConfig.duration || 3000; 
+            document.getElementById('slide-effect').value = slideConfig.effect || 'fade'; 
+        } else { 
+            document.getElementById('slide-time').value = 3000; 
+            document.getElementById('slide-effect').value = 'fade'; 
+        }
     };
 
     window.saveSlideSettings = async function() {
-        if (!WORKER_URL || WORKER_URL === "") { window.showToast("Worker URL eksik!", "error"); return; }
+        if (!WORKER_URL || WORKER_URL === "") { 
+            window.showToast("Worker URL eksik!", "error"); 
+            return; 
+        }
         
         try {
             const currentFile = document.getElementById('file-selector').value;
@@ -559,17 +672,31 @@
                     found = true;
                 }
             });
-            if (!found) { settingsData.push({ file: currentFile, effect: effectVal, duration: timeVal }); }
+            if (!found) { 
+                settingsData.push({ file: currentFile, effect: effectVal, duration: timeVal }); 
+            }
 
             const newContent = JSON.stringify(settingsData, null, 2);
             const b64 = btoa(unescape(encodeURIComponent(newContent)));
 
-            const putRes = await fetch(WORKER_URL, { method: "PUT", headers: { "X-Auth-Key": SESSION_PASS, "X-File-Name": "settings.json" }, body: JSON.stringify({message: "Slayt Ayarı Senkronizasyonu", content: b64, sha: settingsSha}) });
+            const putRes = await fetch(WORKER_URL, { 
+                method: "PUT", 
+                headers: { "X-Auth-Key": SESSION_PASS, "X-File-Name": "settings.json" }, 
+                body: JSON.stringify({message: "Slayt Ayarı Senkronizasyonu", content: b64, sha: settingsSha}) 
+            });
+            
             if(putRes.ok) { 
-                try { const data = await putRes.json(); settingsSha = data.content?.sha || data.sha || settingsSha; } catch(e) {}
+                try { 
+                    const data = await putRes.json(); 
+                    settingsSha = data.content?.sha || data.sha || settingsSha; 
+                } catch(e) {}
                 window.showToast("Slayt Ayarı Kaydedildi!");
-            } else { window.showToast("Ayar Kayıt Hatası!", "error"); }
-        } catch (e) { window.showToast("Ayarlar kaydedilemedi.", "error"); }
+            } else { 
+                window.showToast("Ayar Kayıt Hatası!", "error"); 
+            }
+        } catch (e) { 
+            window.showToast("Ayarlar kaydedilemedi.", "error"); 
+        }
     };
 
     window.loadIndexHtml = async function() {
@@ -580,8 +707,12 @@
                 indexHtmlSha = data.sha || (data.content && data.content.sha) || "";
                 indexHtmlContent = decodeURIComponent(escape(atob(data.content))));
                 window.updateHtmlEffectUI();
-            } else { console.error("index.html yüklenemedi."); }
-        } catch (e) { console.error("index.html bağlantı hatası", e); }
+            } else { 
+                console.error("index.html yüklenemedi."); 
+            }
+        } catch (e) { 
+            console.error("index.html bağlantı hatası", e); 
+        }
     };
 
     window.updateHtmlEffectUI = function() {
@@ -591,13 +722,21 @@
         const match = indexHtmlContent.match(blockRegex);
         if (match && match[1]) {
             const transMatch = match[1].match(/transition:[^;]*?([\d\.]+)(s|ms)/i);
-            if (transMatch && transMatch[1]) { document.getElementById('html-effect-duration').value = transMatch[1]; } 
-            else { document.getElementById('html-effect-duration').value = "1.5"; }
-        } else { document.getElementById('html-effect-duration').value = "1.5"; }
+            if (transMatch && transMatch[1]) { 
+                document.getElementById('html-effect-duration').value = transMatch[1]; 
+            } else { 
+                document.getElementById('html-effect-duration').value = "1.5"; 
+            }
+        } else { 
+            document.getElementById('html-effect-duration').value = "1.5"; 
+        }
     };
 
     window.saveHtmlSettings = async function() {
-        if(!indexHtmlContent) { window.showToast("index.html okunamadı. Sayfayı yenileyin.", "error"); return; }
+        if(!indexHtmlContent) { 
+            window.showToast("index.html okunamadı. Sayfayı yenileyin.", "error"); 
+            return; 
+        }
         try {
             const effect = document.getElementById('html-effect-select').value;
             const duration = document.getElementById('html-effect-duration').value;
@@ -606,11 +745,17 @@
             if (blockRegex.test(indexHtmlContent)) {
                 indexHtmlContent = indexHtmlContent.replace(blockRegex, function(fullMatch, p1, p2, p3) {
                     let updatedInner = p2;
-                    if (/transition:/i.test(p2)) { updatedInner = p2.replace(/(transition:[^;]*?)([\d\.]+)(s|ms)/gi, `$1${duration}$3`); } 
-                    else { updatedInner = p2 + `transition: ${duration}s;`; }
+                    if (/transition:/i.test(p2)) { 
+                        updatedInner = p2.replace(/(transition:[^;]*?)([\d\.]+)(s|ms)/gi, `$1${duration}$3`); 
+                    } else { 
+                        updatedInner = p2 + `transition: ${duration}s;`; 
+                    }
                     return p1 + updatedInner + p3;
                 });
-            } else { window.showToast(`'${effect}' kuralı bulunamadı!`, "error"); return; }
+            } else { 
+                window.showToast(`'${effect}' kuralı bulunamadı!`, "error"); 
+                return; 
+            }
 
             const b64 = btoa(unescape(encodeURIComponent(indexHtmlContent)));
             const putRes = await fetch(WORKER_URL, {
@@ -620,34 +765,66 @@
             });
 
             if(putRes.ok) {
-                try { const data = await putRes.json(); indexHtmlSha = data.content?.sha || data.sha || indexHtmlSha; } catch(e) {}
+                try { 
+                    const data = await putRes.json(); 
+                    indexHtmlSha = data.content?.sha || data.sha || indexHtmlSha; 
+                } catch(e) {}
                 window.showToast("İndex.html Güncellendi!");
-            } else { window.showToast("Kayıt Hatası!", "error"); }
-        } catch(e) { window.showToast("Hata oluştu.", "error"); }
+            } else { 
+                window.showToast("Kayıt Hatası!", "error"); 
+            }
+        } catch(e) { 
+            window.showToast("Hata oluştu.", "error"); 
+        }
     };
 
     window.loadSlide = async function() {
         const file = document.getElementById('file-selector').value;
         try {
             const res = await fetch(WORKER_URL, { headers: {"X-Auth-Key": SESSION_PASS, "X-File-Name": file} });
-            if (res.status === 401) { window.showToast("Şifre Hatalı!", "error"); document.getElementById('login-screen').style.display = "flex"; document.getElementById('app-container').style.display = "none"; return; }
-            document.getElementById('login-screen').style.display = "none"; document.getElementById('app-container').style.display = "flex";
+            if (res.status === 401) { 
+                window.showToast("Şifre Hatalı!", "error"); 
+                document.getElementById('login-screen').style.display = "flex"; 
+                document.getElementById('app-container').style.display = "none"; 
+                return; 
+            }
+            document.getElementById('login-screen').style.display = "none"; 
+            document.getElementById('app-container').style.display = "flex";
+            
             if (res.status === 404) {
-                SHA_KEY = ""; document.getElementById('canvas-inner').innerHTML = `<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><rect id="canvas-background" x="0" y="0" width="1920" height="1080" fill="#ffffff"></rect><g id="guides-group"></g></svg>`;
+                SHA_KEY = ""; 
+                document.getElementById('canvas-inner').innerHTML = `<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><rect id="canvas-background" x="0" y="0" width="1920" height="1080" fill="#ffffff"></rect><g id="guides-group"></g></svg>`;
             } else {
-                const data = await res.json(); SHA_KEY = data.sha || "";
+                const data = await res.json(); 
+                SHA_KEY = data.sha || "";
                 document.getElementById('canvas-inner').innerHTML = decodeURIComponent(escape(atob(data.content)));
             }
-            historyStack = []; historyIndex = -1;
-            setTimeout(() => { window.setupLayers(); window.initCanvasSettings(); window.resetZoom(); window.saveState(); }, 200);
+            
+            historyStack = []; 
+            historyIndex = -1;
+            setTimeout(() => { 
+                window.setupLayers(); 
+                window.initCanvasSettings(); 
+                window.resetZoom(); 
+                window.saveState(); 
+            }, 200);
             window.showToast("Tuval Yüklendi!");
-        } catch(e) { window.showToast("Bağlantı Hatası!", "error"); document.getElementById('login-screen').style.display = "flex"; document.getElementById('app-container').style.display = "none"; }
+        } catch(e) { 
+            window.showToast("Bağlantı Hatası!", "error"); 
+            document.getElementById('login-screen').style.display = "flex"; 
+            document.getElementById('app-container').style.display = "none"; 
+        }
     };
 
     window.saveData = async function() {
-        if (!WORKER_URL || WORKER_URL === "") { window.showToast("Worker URL Eksik!", "error"); return; }
+        if (!WORKER_URL || WORKER_URL === "") { 
+            window.showToast("Worker URL Eksik!", "error"); 
+            return; 
+        }
+        
         try {
-            document.getElementById('control-layer').innerHTML = ""; window.hideGuides(true);
+            document.getElementById('control-layer').innerHTML = ""; 
+            window.hideGuides(true);
             const svgText = new XMLSerializer().serializeToString(document.querySelector('#canvas-inner svg')); 
             const b64 = btoa(unescape(encodeURIComponent(svgText)));
             window.hideGuides(false);
@@ -660,65 +837,117 @@
             });
             
             if(res.ok) { 
-                try { const data = await res.json(); SHA_KEY = data.content?.sha || data.sha || SHA_KEY; } catch(err) {}
+                try { 
+                    const data = await res.json(); 
+                    SHA_KEY = data.content?.sha || data.sha || SHA_KEY; 
+                } catch(err) {}
                 window.showToast("Tasarım Başarıyla Kaydedildi!");
-                const now = new Date(); document.getElementById('status-time').innerText = `Son Kayıt: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
-            } else { window.showToast("Tuval Kayıt Hatası!", "error"); }
-            if(selectedEl && window.updateEditorUI) window.updateEditorUI(selectedEl);
-        } catch(e) { window.showToast("Bağlantı Hatası!", "error"); }
+                const now = new Date(); 
+                document.getElementById('status-time').innerText = `Son Kayıt: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
+            } else { 
+                window.showToast("Tuval Kayıt Hatası!", "error"); 
+            }
+            if(selectedEl && window.updateEditorUI) {
+                window.updateEditorUI(selectedEl);
+            }
+        } catch(e) { 
+            window.showToast("Bağlantı Hatası!", "error"); 
+        }
     };
 
     window.addNewText = function() {
-        const svg = document.querySelector('#canvas-inner svg'); if(!svg) return; 
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if(!svg) return; 
         const center = window.getCanvasCenter();
         const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        t.id = "txt_" + Date.now(); t.setAttribute("class", "duzenlenebilir"); 
-        t.setAttribute("x", center.cx); t.setAttribute("y", center.cy); 
-        t.setAttribute("text-anchor", "middle"); t.setAttribute("dominant-baseline", "central"); 
-        window.setD(t, 'base-font-size', "60"); window.setD(t, 'raw-text', "YENİ METİN"); 
-        window.setD(t, 'solid-color', "#000000"); t.setAttribute("fill", "#000000"); 
-        t.setAttribute("font-size", "60"); t.setAttribute("font-family", "sans-serif"); t.textContent = "YENİ METİN";
-        svg.appendChild(t); selectedEl = t; window.saveState(); window.setupLayers(); window.updateEditorUI(t); window.renderEditor();
+        t.id = "txt_" + Date.now(); 
+        t.setAttribute("class", "duzenlenebilir"); 
+        t.setAttribute("x", center.cx); 
+        t.setAttribute("y", center.cy); 
+        t.setAttribute("text-anchor", "middle"); 
+        t.setAttribute("dominant-baseline", "central"); 
+        window.setD(t, 'base-font-size', "60"); 
+        window.setD(t, 'raw-text', "YENİ METİN"); 
+        window.setD(t, 'solid-color', "#000000"); 
+        t.setAttribute("fill", "#000000"); 
+        t.setAttribute("font-size", "60"); 
+        t.setAttribute("font-family", "sans-serif"); 
+        t.textContent = "YENİ METİN";
+        svg.appendChild(t); 
+        selectedEl = t; 
+        window.saveState(); 
+        window.setupLayers(); 
+        window.updateEditorUI(t); 
+        window.renderEditor();
     };
     
     window.addShape = function(type) {
-        const svg = document.querySelector('#canvas-inner svg'); if(!svg) return; 
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if(!svg) return; 
         const center = window.getCanvasCenter();
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.id = "shp_" + Date.now(); rect.setAttribute("class", "duzenlenebilir"); 
-        rect.setAttribute("x", center.cx - 100); rect.setAttribute("y", center.cy - 100); 
-        rect.setAttribute("width", 200); rect.setAttribute("height", 200); 
-        window.setD(rect, 'solid-color', "#10b981"); rect.setAttribute("fill", "#10b981"); window.setD(rect, 'mask-shape', "none");
-        svg.appendChild(rect); selectedEl = rect; window.saveState(); window.setupLayers(); window.updateEditorUI(rect); window.renderEditor();
+        rect.id = "shp_" + Date.now(); 
+        rect.setAttribute("class", "duzenlenebilir"); 
+        rect.setAttribute("x", center.cx - 100); 
+        rect.setAttribute("y", center.cy - 100); 
+        rect.setAttribute("width", 200); 
+        rect.setAttribute("height", 200); 
+        window.setD(rect, 'solid-color', "#10b981"); 
+        rect.setAttribute("fill", "#10b981"); 
+        window.setD(rect, 'mask-shape', "none");
+        svg.appendChild(rect); 
+        selectedEl = rect; 
+        window.saveState(); 
+        window.setupLayers(); 
+        window.updateEditorUI(rect); 
+        window.renderEditor();
     };
 
     window.changeProp = function(id, prop, val, elUI) {
-        const el = document.getElementById(id); if(!el) return;
+        const el = document.getElementById(id); 
+        if(!el) return;
         if(prop === 'x') el.setAttribute('x', val);
         if(prop === 'y') el.setAttribute('y', val);
         if(prop === 'w') {
             if(el.tagName === 'text') {
                 if(val > 10) {
-                    el.setAttribute('textLength', val); el.setAttribute('lengthAdjust', 'spacingAndGlyphs');
+                    el.setAttribute('textLength', val); 
+                    el.setAttribute('lengthAdjust', 'spacingAndGlyphs');
                     const tp = el.querySelector('textPath');
-                    if (tp) { tp.setAttribute('textLength', val); tp.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
+                    if (tp) { 
+                        tp.setAttribute('textLength', val); 
+                        tp.setAttribute('lengthAdjust', 'spacingAndGlyphs'); 
+                    }
                 } else {
-                    el.removeAttribute('textLength'); el.removeAttribute('lengthAdjust');
+                    el.removeAttribute('textLength'); 
+                    el.removeAttribute('lengthAdjust');
                     const tp = el.querySelector('textPath');
-                    if (tp) { tp.removeAttribute('textLength'); tp.removeAttribute('lengthAdjust'); }
+                    if (tp) { 
+                        tp.removeAttribute('textLength'); 
+                        tp.removeAttribute('lengthAdjust'); 
+                    }
                 }
-            } else { el.setAttribute('width', val); }
+            } else { 
+                el.setAttribute('width', val); 
+            }
         }
         if(prop === 'h') {
-            if(el.tagName === 'text') { window.setD(el, 'base-font-size', val); el.setAttribute('font-size', val); } 
-            else { el.setAttribute('height', val); }
+            if(el.tagName === 'text') { 
+                window.setD(el, 'base-font-size', val); 
+                el.setAttribute('font-size', val); 
+            } else { 
+                el.setAttribute('height', val); 
+            }
         }
         
         if (elUI) {
             const badge = document.getElementById('val-' + prop + '-' + id);
             if (badge) badge.innerText = val + 'px';
-            if (elUI.type === 'range' && elUI.nextElementSibling && elUI.nextElementSibling.type === 'number') elUI.nextElementSibling.value = val;
-            else if (elUI.type === 'number' && elUI.previousElementSibling && elUI.previousElementSibling.type === 'range') elUI.previousElementSibling.value = val;
+            if (elUI.type === 'range' && elUI.nextElementSibling && elUI.nextElementSibling.type === 'number') {
+                elUI.nextElementSibling.value = val;
+            } else if (elUI.type === 'number' && elUI.previousElementSibling && elUI.previousElementSibling.type === 'range') {
+                elUI.previousElementSibling.value = val;
+            }
         }
         
         if(el.tagName === 'text') window.applyTextCurve(el);
@@ -727,43 +956,81 @@
     };
 
     window.changeSetting = function(id, key, val, elUI) {
-        const el = document.getElementById(id); if(!el) return;
+        const el = document.getElementById(id); 
+        if(!el) return;
         window.setD(el, key, val);
         
         if (key === 'raw-text') {
-            el.removeAttribute('textLength'); el.removeAttribute('lengthAdjust');
+            el.removeAttribute('textLength'); 
+            el.removeAttribute('lengthAdjust');
             const tp = el.querySelector('textPath');
-            if (tp) { tp.removeAttribute('textLength'); tp.removeAttribute('lengthAdjust'); }
+            if (tp) { 
+                tp.removeAttribute('textLength'); 
+                tp.removeAttribute('lengthAdjust'); 
+            }
         }
 
         if(key === 'curve' || key === 'raw-text' || key === 'letter-spacing' || key === 'max-width' || key === 'max-height') { 
-            if(key === 'letter-spacing') el.setAttribute('letter-spacing', val); 
+            if(key === 'letter-spacing') {
+                el.setAttribute('letter-spacing', val); 
+            }
             window.applyTextCurve(el); 
         }
-        // Gelişmiş Kırpma Tetikleyicisi
-        if(key === 'rx' || key === 'mask-shape' || key.startsWith('crop')) window.applyShapeMask(el);
-        if(key === 'angle') window.applyTransforms(el);
+        
+        if(key === 'rx' || key === 'mask-shape' || key.startsWith('crop')) {
+            window.applyShapeMask(el);
+        }
+        
+        if(key === 'angle') {
+            window.applyTransforms(el);
+        }
         
         if (elUI) {
             const badge = document.getElementById('val-' + key + '-' + id);
-            if (badge) badge.innerText = val + (key === 'angle' ? '°' : (key === 'curve' ? '' : (key.startsWith('crop') ? '%' : 'px')));
-            if (elUI.type === 'range' && elUI.nextElementSibling && elUI.nextElementSibling.type === 'number') elUI.nextElementSibling.value = val;
-            else if (elUI.type === 'number' && elUI.previousElementSibling && elUI.previousElementSibling.type === 'range') elUI.previousElementSibling.value = val;
+            if (badge) {
+                let suffix = 'px';
+                if(key === 'angle') suffix = '°';
+                else if(key === 'curve') suffix = '';
+                else if(key.startsWith('crop')) suffix = '%';
+                badge.innerText = val + suffix;
+            }
+            if (elUI.type === 'range' && elUI.nextElementSibling && elUI.nextElementSibling.type === 'number') {
+                elUI.nextElementSibling.value = val;
+            } else if (elUI.type === 'number' && elUI.previousElementSibling && elUI.previousElementSibling.type === 'range') {
+                elUI.previousElementSibling.value = val;
+            }
         }
         if(window.updateEditorUI) window.updateEditorUI(el);
     };
     
     window.changeFilter = function(id, filterType, val, elUI) {
-        const el = document.getElementById(id); if(!el) return;
-        if(filterType === 'opacity') el.setAttribute('opacity', val);
-        else window.setD(el, filterType, val);
+        const el = document.getElementById(id); 
+        if(!el) return;
+        
+        if(filterType === 'opacity') {
+            el.setAttribute('opacity', val);
+        } else {
+            window.setD(el, filterType, val);
+        }
+        
         window.applyFilters(el);
         
         if (elUI) {
-            const badge = document.getElementById('val-' + (filterType==='opacity'?'op':(filterType==='shadow-x'?'sx':(filterType==='shadow-y'?'sy':(filterType==='shadow-blur'?'sb':'bl')))) + '-' + id);
-            if (badge) badge.innerText = (filterType==='opacity' ? Math.round(val*100)+'%' : val+'px');
-            if (elUI.type === 'range' && elUI.nextElementSibling && elUI.nextElementSibling.type === 'number') elUI.nextElementSibling.value = val;
-            else if (elUI.type === 'number' && elUI.previousElementSibling && elUI.previousElementSibling.type === 'range') elUI.previousElementSibling.value = val;
+            let labelId = filterType === 'opacity' ? 'op' : 
+                          filterType === 'shadow-x' ? 'sx' : 
+                          filterType === 'shadow-y' ? 'sy' : 
+                          filterType === 'shadow-blur' ? 'sb' : 'bl';
+            
+            const badge = document.getElementById('val-' + labelId + '-' + id);
+            if (badge) {
+                badge.innerText = (filterType === 'opacity' ? Math.round(val*100) + '%' : val + 'px');
+            }
+            
+            if (elUI.type === 'range' && elUI.nextElementSibling && elUI.nextElementSibling.type === 'number') {
+                elUI.nextElementSibling.value = val;
+            } else if (elUI.type === 'number' && elUI.previousElementSibling && elUI.previousElementSibling.type === 'range') {
+                elUI.previousElementSibling.value = val;
+            }
         }
     };
 
@@ -771,196 +1038,592 @@
         if (!file || !file.type.startsWith('image/')) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-            const svg = document.querySelector('#canvas-inner svg'); const center = window.getCanvasCenter();
+            const svg = document.querySelector('#canvas-inner svg'); 
+            const center = window.getCanvasCenter();
             const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-            img.id = "img_" + Date.now(); img.setAttribute("class", "duzenlenebilir"); 
-            img.setAttribute("x", center.cx - 150); img.setAttribute("y", center.cy - 150); 
-            img.setAttribute("width", 300); img.setAttribute("height", 300); 
-            window.setD(img, "rx", "0"); window.setD(img, "smoothing", "0.5"); window.setD(img, "mask-shape", "none"); 
-            img.setAttribute("href", ev.target.result); img.setAttributeNS("http://www.w3.org/1999/xlink", "href", ev.target.result);
-            svg.appendChild(img); selectedEl = img; window.saveState(); window.setupLayers(); window.updateEditorUI(img); window.renderEditor();
-        }; reader.readAsDataURL(file);
+            img.id = "img_" + Date.now(); 
+            img.setAttribute("class", "duzenlenebilir"); 
+            img.setAttribute("x", center.cx - 150); 
+            img.setAttribute("y", center.cy - 150); 
+            img.setAttribute("width", 300); 
+            img.setAttribute("height", 300); 
+            window.setD(img, "rx", "0"); 
+            window.setD(img, "smoothing", "0.5"); 
+            window.setD(img, "mask-shape", "none"); 
+            img.setAttribute("href", ev.target.result); 
+            img.setAttributeNS("http://www.w3.org/1999/xlink", "href", ev.target.result);
+            svg.appendChild(img); 
+            selectedEl = img; 
+            window.saveState(); 
+            window.setupLayers(); 
+            window.updateEditorUI(img); 
+            window.renderEditor();
+        }; 
+        reader.readAsDataURL(file);
     };
     
-    document.getElementById('img-in').onchange = (e) => { window.handleImageFile(e.target.files[0]); e.target.value = ""; };
+    document.getElementById('img-in').onchange = (e) => { 
+        window.handleImageFile(e.target.files[0]); 
+        e.target.value = ""; 
+    };
+    
     const mainView = document.getElementById('main-view');
-    mainView.addEventListener('dragover', (e) => { e.preventDefault(); mainView.style.opacity = '0.8'; });
-    mainView.addEventListener('dragleave', (e) => { e.preventDefault(); mainView.style.opacity = '1'; });
-    mainView.addEventListener('drop', (e) => { e.preventDefault(); mainView.style.opacity = '1'; window.handleImageFile(e.dataTransfer.files[0]); });
+    mainView.addEventListener('dragover', (e) => { 
+        e.preventDefault(); 
+        mainView.style.opacity = '0.8'; 
+    });
+    mainView.addEventListener('dragleave', (e) => { 
+        e.preventDefault(); 
+        mainView.style.opacity = '1'; 
+    });
+    mainView.addEventListener('drop', (e) => { 
+        e.preventDefault(); 
+        mainView.style.opacity = '1'; 
+        window.handleImageFile(e.dataTransfer.files[0]); 
+    });
 
-    window.closeCtx = function() { document.getElementById('context-menu').style.display = 'none'; };
+    window.closeCtx = function() { 
+        document.getElementById('context-menu').style.display = 'none'; 
+    };
+    
     document.addEventListener('click', window.closeCtx);
+    
     document.getElementById('svg-wrapper').addEventListener('contextmenu', (e) => {
         const el = e.target.closest('.duzenlenebilir');
         if(el) {
-            e.preventDefault(); selectedEl = el; isDraggingElement = false; window.updateEditorUI(el); window.renderEditor();
+            e.preventDefault(); 
+            selectedEl = el; 
+            isDraggingElement = false; 
+            window.updateEditorUI(el); 
+            window.renderEditor();
+            
             const ctxMenu = document.getElementById('context-menu');
             document.getElementById('ctx-lock-text').innerText = window.getD(el, 'locked') === "true" ? "Kilidi Aç" : "Kilitle";
             document.getElementById('ctx-lock-icon').className = window.getD(el, 'locked') === "true" ? "ph ph-lock-key-open" : "ph ph-lock-key";
+            
             ctxMenu.style.display = 'block';
-            let x = e.clientX; let y = e.clientY;
+            let x = e.clientX; 
+            let y = e.clientY;
             if(x + 200 > window.innerWidth) x = window.innerWidth - 200;
             if(y + 250 > window.innerHeight) y = window.innerHeight - 250;
-            ctxMenu.style.left = x + 'px'; ctxMenu.style.top = y + 'px';
+            ctxMenu.style.left = x + 'px'; 
+            ctxMenu.style.top = y + 'px';
         }
     });
 
-    window.hideGuides = function(hide) { const gg = document.getElementById('guides-group'); if(gg) gg.style.display = hide ? 'none' : 'block'; };
-    window.clearGuides = function() { const gg = document.getElementById('guides-group'); if(gg) { gg.innerHTML = ''; window.saveState(); } };
-    window.openExport = function(type) { document.getElementById('export-format').value = type; document.getElementById('export-modal').style.display = 'flex'; };
+    window.hideGuides = function(hide) { 
+        const gg = document.getElementById('guides-group'); 
+        if(gg) gg.style.display = hide ? 'none' : 'block'; 
+    };
+    
+    window.clearGuides = function() { 
+        const gg = document.getElementById('guides-group'); 
+        if(gg) { 
+            gg.innerHTML = ''; 
+            window.saveState(); 
+        } 
+    };
+    
+    window.openExport = function(type) { 
+        document.getElementById('export-format').value = type; 
+        document.getElementById('export-modal').style.display = 'flex'; 
+    };
+    
     window.executeExport = function() {
-        const format = document.getElementById('export-format').value; const scale = parseInt(document.getElementById('export-scale').value); const scope = document.getElementById('export-scope').value;
-        const svg = document.querySelector('#canvas-inner svg'); if(!svg) return;
-        document.getElementById('control-layer').innerHTML = ""; window.renderEditor(); window.hideGuides(true); document.getElementById('export-modal').style.display = 'none';
+        const format = document.getElementById('export-format').value; 
+        const scale = parseInt(document.getElementById('export-scale').value); 
+        const scope = document.getElementById('export-scope').value;
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if(!svg) return;
+        
+        document.getElementById('control-layer').innerHTML = ""; 
+        window.renderEditor(); 
+        window.hideGuides(true); 
+        document.getElementById('export-modal').style.display = 'none';
         
         let hiddenElements = [];
         if (scope === 'selected') {
-            if(!selectedEl) { window.showToast("Önce bir nesne seçmelisiniz!", "error"); window.hideGuides(false); return; }
-            document.querySelectorAll('.duzenlenebilir, #canvas-background').forEach(el => { if(el !== selectedEl) { hiddenElements.push({el: el, display: el.style.display}); el.style.display = 'none'; } });
+            if(!selectedEl) { 
+                window.showToast("Önce bir nesne seçmelisiniz!", "error"); 
+                window.hideGuides(false); 
+                return; 
+            }
+            document.querySelectorAll('.duzenlenebilir, #canvas-background').forEach(el => { 
+                if(el !== selectedEl) { 
+                    hiddenElements.push({el: el, display: el.style.display}); 
+                    el.style.display = 'none'; 
+                } 
+            });
         }
 
-        const originalWidth = svg.getAttribute('width'); const originalHeight = svg.getAttribute('height');
-        const vb = svg.viewBox.baseVal; const targetW = (vb.width || 1920) * scale; const targetH = (vb.height || 1080) * scale;
-        svg.setAttribute('width', targetW); svg.setAttribute('height', targetH);
+        const originalWidth = svg.getAttribute('width'); 
+        const originalHeight = svg.getAttribute('height');
+        const vb = svg.viewBox.baseVal; 
+        const targetW = (vb.width || 1920) * scale; 
+        const targetH = (vb.height || 1080) * scale;
+        
+        svg.setAttribute('width', targetW); 
+        svg.setAttribute('height', targetH);
         const svgData = new XMLSerializer().serializeToString(svg);
         
         if (format === 'png') {
-            const canvas = document.createElement("canvas"); const ctx = canvas.getContext("2d"); const img = new Image();
-            img.onload = function() { canvas.width = targetW; canvas.height = targetH; ctx.drawImage(img, 0, 0); const a = document.createElement("a"); a.download = "tasarim.png"; a.href = canvas.toDataURL("image/png"); a.click(); finishExport(); };
+            const canvas = document.createElement("canvas"); 
+            const ctx = canvas.getContext("2d"); 
+            const img = new Image();
+            img.onload = function() { 
+                canvas.width = targetW; 
+                canvas.height = targetH; 
+                ctx.drawImage(img, 0, 0); 
+                const a = document.createElement("a"); 
+                a.download = "tasarim.png"; 
+                a.href = canvas.toDataURL("image/png"); 
+                a.click(); 
+                finishExport(); 
+            };
             img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
         } else {
-            const blob = new Blob([svgData], {type: "image/svg+xml;charset=utf-8"}); const url = URL.createObjectURL(blob);
-            const a = document.createElement("a"); a.download = "tasarim_vektor.svg"; a.href = url; a.click(); finishExport();
+            const blob = new Blob([svgData], {type: "image/svg+xml;charset=utf-8"}); 
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a"); 
+            a.download = "tasarim_vektor.svg"; 
+            a.href = url; 
+            a.click(); 
+            finishExport();
         }
-        function finishExport() { svg.setAttribute('width', originalWidth || "100%"); svg.setAttribute('height', originalHeight || "100%"); hiddenElements.forEach(item => item.el.style.display = item.display); window.hideGuides(false); if(selectedEl) window.updateEditorUI(selectedEl); window.showToast("İndirme Başarılı!");}
+        
+        function finishExport() { 
+            svg.setAttribute('width', originalWidth || "100%"); 
+            svg.setAttribute('height', originalHeight || "100%"); 
+            hiddenElements.forEach(item => item.el.style.display = item.display); 
+            window.hideGuides(false); 
+            if(selectedEl) window.updateEditorUI(selectedEl); 
+            window.showToast("İndirme Başarılı!");
+        }
     };
 
     window.updateRulers = function() {
-        const hRuler = document.getElementById('horizontal-ruler'); const vRuler = document.getElementById('vertical-ruler'); if(!hRuler || !vRuler) return;
-        const svg = document.querySelector('#canvas-inner svg'); if(!svg) return; const vb = svg.viewBox.baseVal; const w = vb.width || 1920; const h = vb.height || 1080;
-        const pt_h = `M0,0 h${w} M0,0 v15 `; const pt_v = `M0,0 v${h} M0,0 h15 `;
-        let labels_h = ''; let labels_v = '';
-        for(let x=0; x<=w; x+=100) { if(x>0) labels_h += `<text x="${x}" y="12" font-size="10" text-anchor="middle" fill="#94a3b8">${x}</text>`; }
-        for(let y=0; y<=h; y+=100) { if(y>0) labels_v += `<text x="2" y="${y+3}" font-size="10" fill="#94a3b8">${y}</text>`; }
+        const hRuler = document.getElementById('horizontal-ruler'); 
+        const vRuler = document.getElementById('vertical-ruler'); 
+        if(!hRuler || !vRuler) return;
+        
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if(!svg) return; 
+        
+        const vb = svg.viewBox.baseVal; 
+        const w = vb.width || 1920; 
+        const h = vb.height || 1080;
+        const pt_h = `M0,0 h${w} M0,0 v15 `; 
+        const pt_v = `M0,0 v${h} M0,0 h15 `;
+        
+        let labels_h = ''; 
+        let labels_v = '';
+        for(let x=0; x<=w; x+=100) { 
+            if(x>0) labels_h += `<text x="${x}" y="12" font-size="10" text-anchor="middle" fill="#94a3b8">${x}</text>`; 
+        }
+        for(let y=0; y<=h; y+=100) { 
+            if(y>0) labels_v += `<text x="2" y="${y+3}" font-size="10" fill="#94a3b8">${y}</text>`; 
+        }
+        
         hRuler.innerHTML = `<svg width="100%" height="20" viewBox="0 0 ${w} 20" preserveAspectRatio="none"><path d="${pt_h}" stroke="#334155"/><line id="h-cursor" x1="0" y1="0" x2="0" y2="20" stroke="#ef4444" stroke-width="1"/><g>${labels_h}</g></svg>`;
         vRuler.innerHTML = `<svg width="20" height="100%" viewBox="0 0 20 ${h}" preserveAspectRatio="none"><path d="${pt_v}" stroke="#334155"/><line id="v-cursor" x1="0" y1="0" x2="20" y2="0" stroke="#ef4444" stroke-width="1"/><g>${labels_v}</g></svg>`;
+        
         window.syncRulerTransform();
     };
     
     window.syncRulerTransform = function() {
-        const hRulerSvg = document.querySelector('#horizontal-ruler svg'); const vRulerSvg = document.querySelector('#vertical-ruler svg'); if(!hRulerSvg || !vRulerSvg) return;
-        hRulerSvg.style.transform = `scaleX(${currentZoom}) translateX(${panX}px)`; hRulerSvg.style.transformOrigin = 'left center';
-        vRulerSvg.style.transform = `scaleY(${currentZoom}) translateY(${panY}px)`; vRulerSvg.style.transformOrigin = 'top center';
+        const hRulerSvg = document.querySelector('#horizontal-ruler svg'); 
+        const vRulerSvg = document.querySelector('#vertical-ruler svg'); 
+        if(!hRulerSvg || !vRulerSvg) return;
+        
+        hRulerSvg.style.transform = `scaleX(${currentZoom}) translateX(${panX}px)`; 
+        hRulerSvg.style.transformOrigin = 'left center';
+        vRulerSvg.style.transform = `scaleY(${currentZoom}) translateY(${panY}px)`; 
+        vRulerSvg.style.transformOrigin = 'top center';
     };
     
     document.getElementById('main-view').addEventListener('mousemove', (e) => {
-        const svg = document.querySelector('#canvas-inner svg'); if(!svg) return; 
-        const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
-        const hCursor = document.getElementById('h-cursor'); const vCursor = document.getElementById('v-cursor'); if(!hCursor || !vCursor) return;
-        hCursor.setAttribute('x1', cursorpt.x); hCursor.setAttribute('x2', cursorpt.x); vCursor.setAttribute('y1', cursorpt.y); vCursor.setAttribute('y2', cursorpt.y);
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if(!svg) return; 
+        
+        const pt = svg.createSVGPoint(); 
+        pt.x = e.clientX; 
+        pt.y = e.clientY; 
+        const cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
+        const hCursor = document.getElementById('h-cursor'); 
+        const vCursor = document.getElementById('v-cursor'); 
+        if(!hCursor || !vCursor) return;
+        
+        hCursor.setAttribute('x1', cursorpt.x); 
+        hCursor.setAttribute('x2', cursorpt.x); 
+        vCursor.setAttribute('y1', cursorpt.y); 
+        vCursor.setAttribute('y2', cursorpt.y);
     });
 
     window.initCanvasSettings = function() {
-        const svg = document.querySelector('#canvas-inner svg'); if (!svg) return; const vb = svg.viewBox.baseVal;
-        document.getElementById('canvas-w').value = vb.width || 1920; document.getElementById('canvas-h').value = vb.height || 1080;
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if (!svg) return; 
+        const vb = svg.viewBox.baseVal;
+        
+        document.getElementById('canvas-w').value = vb.width || 1920; 
+        document.getElementById('canvas-h').value = vb.height || 1080;
+        
         let bgRect = svg.querySelector('#canvas-background');
-        if (!bgRect) { bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect"); bgRect.id = "canvas-background"; bgRect.setAttribute("x", "0"); bgRect.setAttribute("y", "0"); bgRect.setAttribute("width", vb.width || 1920); bgRect.setAttribute("height", vb.height || 1080); bgRect.setAttribute("fill", "#ffffff"); svg.insertBefore(bgRect, svg.firstChild); }
+        if (!bgRect) { 
+            bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect"); 
+            bgRect.id = "canvas-background"; 
+            bgRect.setAttribute("x", "0"); 
+            bgRect.setAttribute("y", "0"); 
+            bgRect.setAttribute("width", vb.width || 1920); 
+            bgRect.setAttribute("height", vb.height || 1080); 
+            bgRect.setAttribute("fill", "#ffffff"); 
+            svg.insertBefore(bgRect, svg.firstChild); 
+        }
         document.getElementById('canvas-bg-color').value = safeColor(bgRect.getAttribute("fill"));
-        if(!svg.querySelector('#guides-group')) { const gg = document.createElementNS("http://www.w3.org/2000/svg", "g"); gg.id = "guides-group"; svg.appendChild(gg); }
+        
+        if(!svg.querySelector('#guides-group')) { 
+            const gg = document.createElementNS("http://www.w3.org/2000/svg", "g"); 
+            gg.id = "guides-group"; 
+            svg.appendChild(gg); 
+        }
         window.updateRulers();
     };
     
-    window.updateCanvasSize = function() { const w = document.getElementById('canvas-w').value; const h = document.getElementById('canvas-h').value; const svg = document.querySelector('#canvas-inner svg'); svg.setAttribute("viewBox", `0 0 ${w} ${h}`); document.getElementById('control-layer').setAttribute("viewBox", `0 0 ${w} ${h}`); const bgRect = svg.querySelector('#canvas-background'); if(bgRect) { bgRect.setAttribute("width", w); bgRect.setAttribute("height", h); } window.saveState(); window.updateRulers(); };
-    window.updateCanvasBg = function() { const col = document.getElementById('canvas-bg-color').value; const bgRect = document.querySelector('#canvas-background'); if(bgRect) bgRect.setAttribute("fill", col); window.saveState(); };
-
-    window.addGuide = function(type) {
-        const svg = document.querySelector('#canvas-inner svg'); const vb = svg.viewBox.baseVal;
-        const gg = document.getElementById('guides-group'); if(!gg) return;
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line"); line.classList.add("guide-line"); window.setD(line, "type", type);
-        if(type === 'h') { line.setAttribute("x1", 0); line.setAttribute("y1", vb.height/2); line.setAttribute("x2", vb.width); line.setAttribute("y2", vb.height/2); line.style.cursor = "row-resize"; } else { line.setAttribute("x1", vb.width/2); line.setAttribute("y1", 0); line.setAttribute("x2", vb.width/2); line.setAttribute("y2", vb.height); line.style.cursor = "col-resize"; }
-        line.ondblclick = function() { this.remove(); window.saveState(); }; gg.appendChild(line); window.saveState();
+    window.updateCanvasSize = function() { 
+        const w = document.getElementById('canvas-w').value; 
+        const h = document.getElementById('canvas-h').value; 
+        const svg = document.querySelector('#canvas-inner svg'); 
+        
+        svg.setAttribute("viewBox", `0 0 ${w} ${h}`); 
+        document.getElementById('control-layer').setAttribute("viewBox", `0 0 ${w} ${h}`); 
+        
+        const bgRect = svg.querySelector('#canvas-background'); 
+        if(bgRect) { 
+            bgRect.setAttribute("width", w); 
+            bgRect.setAttribute("height", h); 
+        } 
+        window.saveState(); 
+        window.updateRulers(); 
+    };
+    
+    window.updateCanvasBg = function() { 
+        const col = document.getElementById('canvas-bg-color').value; 
+        const bgRect = document.querySelector('#canvas-background'); 
+        if(bgRect) bgRect.setAttribute("fill", col); 
+        window.saveState(); 
     };
 
-    window.toggleDrawMode = function() { isDrawingMode = !isDrawingMode; document.getElementById('btn-draw').classList.toggle('active', isDrawingMode); document.getElementById('svg-wrapper').classList.toggle('draw-mode', isDrawingMode); selectedEl = null; document.getElementById('control-layer').innerHTML = ""; window.renderEditor(); };
+    window.addGuide = function(type) {
+        const svg = document.querySelector('#canvas-inner svg'); 
+        const vb = svg.viewBox.baseVal;
+        const gg = document.getElementById('guides-group'); 
+        if(!gg) return;
+        
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+        line.classList.add("guide-line"); 
+        window.setD(line, "type", type);
+        
+        if(type === 'h') { 
+            line.setAttribute("x1", 0); 
+            line.setAttribute("y1", vb.height/2); 
+            line.setAttribute("x2", vb.width); 
+            line.setAttribute("y2", vb.height/2); 
+            line.style.cursor = "row-resize"; 
+        } else { 
+            line.setAttribute("x1", vb.width/2); 
+            line.setAttribute("y1", 0); 
+            line.setAttribute("x2", vb.width/2); 
+            line.setAttribute("y2", vb.height); 
+            line.style.cursor = "col-resize"; 
+        }
+        
+        line.ondblclick = function() { 
+            this.remove(); 
+            window.saveState(); 
+        }; 
+        gg.appendChild(line); 
+        window.saveState();
+    };
+
+    window.toggleDrawMode = function() { 
+        isDrawingMode = !isDrawingMode; 
+        document.getElementById('btn-draw').classList.toggle('active', isDrawingMode); 
+        document.getElementById('svg-wrapper').classList.toggle('draw-mode', isDrawingMode); 
+        selectedEl = null; 
+        document.getElementById('control-layer').innerHTML = ""; 
+        window.renderEditor(); 
+    };
 
     window.applyTextStyle = function(id, style, val) {
-        const el = document.getElementById(id); if(!el || el.tagName !== 'text') return;
+        const el = document.getElementById(id); 
+        if(!el || el.tagName !== 'text') return;
         const rawText = window.getD(el, 'raw-text') || el.textContent;
-        if(style === 'normal') { el.innerHTML = ''; el.textContent = rawText; window.setD(el, 'text-style', 'normal'); window.applyTextCurve(el); }
-        else if(style === 'neon') { window.setD(el, 'text-style', 'neon'); el.innerHTML = `<tspan font-weight="bold" fill="#ffffff" stroke="${window.getD(el, 'solid-color')||'#000'}" stroke-width="2" filter="drop-shadow(0 0 15px ${window.getD(el, 'solid-color')||'#000'})">${rawText}</tspan>`; }
-        else if(style === '3d') { window.setD(el, 'text-style', '3d'); el.innerHTML = `<tspan font-weight="bold" fill="${window.getD(el, 'solid-color')||'#000'}" stroke="#000000" stroke-width="3" filter="drop-shadow(6px 6px 0 #000000)">${rawText}</tspan>`; }
-        else if(style === 'hollow') { window.setD(el, 'text-style', 'hollow'); el.innerHTML = `<tspan fill="none" stroke="${window.getD(el, 'solid-color')||'#000'}" stroke-width="4">${rawText}</tspan>`; }
-        else if(style === 'bold') { window.setD(el, 'bold', window.getD(el, 'bold') === 'true' ? 'false' : 'true'); el.setAttribute('font-weight', window.getD(el, 'bold') === 'true' ? 'bold' : 'normal'); }
-        else if(style === 'italic') { window.setD(el, 'italic', window.getD(el, 'italic') === 'true' ? 'false' : 'true'); el.setAttribute('font-style', window.getD(el, 'italic') === 'true' ? 'italic' : 'normal'); }
-        else if(style === 'underline') { window.setD(el, 'underline', window.getD(el, 'underline') === 'true' ? 'false' : 'true'); el.setAttribute('text-decoration', window.getD(el, 'underline') === 'true' ? 'underline' : 'none'); }
-        else if(style === 'align') { el.setAttribute('text-anchor', val); window.autoFitText(el); } 
-        window.saveState(); window.renderEditor(); if(window.updateEditorUI) window.updateEditorUI(el);
+        
+        if(style === 'normal') { 
+            el.innerHTML = ''; 
+            el.textContent = rawText; 
+            window.setD(el, 'text-style', 'normal'); 
+            window.applyTextCurve(el); 
+        }
+        else if(style === 'neon') { 
+            window.setD(el, 'text-style', 'neon'); 
+            el.innerHTML = `<tspan font-weight="bold" fill="#ffffff" stroke="${window.getD(el, 'solid-color')||'#000'}" stroke-width="2" filter="drop-shadow(0 0 15px ${window.getD(el, 'solid-color')||'#000'})">${rawText}</tspan>`; 
+        }
+        else if(style === '3d') { 
+            window.setD(el, 'text-style', '3d'); 
+            el.innerHTML = `<tspan font-weight="bold" fill="${window.getD(el, 'solid-color')||'#000'}" stroke="#000000" stroke-width="3" filter="drop-shadow(6px 6px 0 #000000)">${rawText}</tspan>`; 
+        }
+        else if(style === 'hollow') { 
+            window.setD(el, 'text-style', 'hollow'); 
+            el.innerHTML = `<tspan fill="none" stroke="${window.getD(el, 'solid-color')||'#000'}" stroke-width="4">${rawText}</tspan>`; 
+        }
+        else if(style === 'bold') { 
+            window.setD(el, 'bold', window.getD(el, 'bold') === 'true' ? 'false' : 'true'); 
+            el.setAttribute('font-weight', window.getD(el, 'bold') === 'true' ? 'bold' : 'normal'); 
+        }
+        else if(style === 'italic') { 
+            window.setD(el, 'italic', window.getD(el, 'italic') === 'true' ? 'false' : 'true'); 
+            el.setAttribute('font-style', window.getD(el, 'italic') === 'true' ? 'italic' : 'normal'); 
+        }
+        else if(style === 'underline') { 
+            window.setD(el, 'underline', window.getD(el, 'underline') === 'true' ? 'false' : 'true'); 
+            el.setAttribute('text-decoration', window.getD(el, 'underline') === 'true' ? 'underline' : 'none'); 
+        }
+        else if(style === 'align') { 
+            el.setAttribute('text-anchor', val); 
+            window.autoFitText(el); 
+        } 
+        
+        window.saveState(); 
+        window.renderEditor(); 
+        if(window.updateEditorUI) window.updateEditorUI(el);
     };
     
     window.alignElement = function(id, type) {
-        const el = document.getElementById(id); if(!el) return; const svg = document.querySelector('#canvas-inner svg'); const vb = svg.viewBox.baseVal; 
-        let bbox = {x:0, y:0, width:0, height:0}; try { bbox = el.getBBox(); } catch(e){}
-        if (el.tagName === 'text') { if(type === 'center-h') el.setAttribute('x', vb.width/2); if(type === 'center-v') el.setAttribute('y', vb.height/2); if(type === 'left') el.setAttribute('x', bbox.width/2); if(type === 'right') el.setAttribute('x', vb.width - bbox.width/2); } 
-        else { let nw = parseFloat(el.getAttribute('width')) || bbox.width; let nh = parseFloat(el.getAttribute('height')) || bbox.height; if(type === 'center-h') el.setAttribute('x', (vb.width/2) - (nw/2)); if(type === 'center-v') el.setAttribute('y', (vb.height/2) - (nh/2)); if(type === 'left') el.setAttribute('x', 0); if(type === 'right') el.setAttribute('x', vb.width - nw); } 
-        if(el.tagName === 'image' || el.tagName === 'rect') window.applyShapeMask(el); window.saveState(); if(window.updateEditorUI) window.updateEditorUI(el);
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        const svg = document.querySelector('#canvas-inner svg'); 
+        const vb = svg.viewBox.baseVal; 
+        let bbox = {x:0, y:0, width:0, height:0}; 
+        try { bbox = el.getBBox(); } catch(e){}
+        
+        if (el.tagName === 'text') { 
+            if(type === 'center-h') el.setAttribute('x', vb.width/2); 
+            if(type === 'center-v') el.setAttribute('y', vb.height/2); 
+            if(type === 'left') el.setAttribute('x', bbox.width/2); 
+            if(type === 'right') el.setAttribute('x', vb.width - bbox.width/2); 
+        } 
+        else { 
+            let nw = parseFloat(el.getAttribute('width')) || bbox.width; 
+            let nh = parseFloat(el.getAttribute('height')) || bbox.height; 
+            if(type === 'center-h') el.setAttribute('x', (vb.width/2) - (nw/2)); 
+            if(type === 'center-v') el.setAttribute('y', (vb.height/2) - (nh/2)); 
+            if(type === 'left') el.setAttribute('x', 0); 
+            if(type === 'right') el.setAttribute('x', vb.width - nw); 
+        } 
+        if(el.tagName === 'image' || el.tagName === 'rect') window.applyShapeMask(el); 
+        window.saveState(); 
+        if(window.updateEditorUI) window.updateEditorUI(el);
     };
 
-    window.toggleFlip = function(id, dir) { const el = document.getElementById(id); if(!el) return; if(dir === 'x') window.setD(el, 'flip-x', window.getD(el, 'flip-x') === "-1" ? "1" : "-1"); else window.setD(el, 'flip-y', window.getD(el, 'flip-y') === "-1" ? "1" : "-1"); window.applyTransforms(el); window.saveState(); };
+    window.toggleFlip = function(id, dir) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        if(dir === 'x') {
+            window.setD(el, 'flip-x', window.getD(el, 'flip-x') === "-1" ? "1" : "-1"); 
+        } else {
+            window.setD(el, 'flip-y', window.getD(el, 'flip-y') === "-1" ? "1" : "-1"); 
+        }
+        window.applyTransforms(el); 
+        window.saveState(); 
+    };
     
     window.applyTransforms = function(el) {
         let cx = 0, cy = 0;
-        if(el.tagName === 'text') { cx = parseFloat(el.getAttribute('x')) || 0; cy = parseFloat(el.getAttribute('y')) || 0; } 
-        else if(el.tagName !== 'path') { cx = (parseFloat(el.getAttribute('x')) || 0) + (parseFloat(el.getAttribute('width')) || 0) / 2; cy = (parseFloat(el.getAttribute('y')) || 0) + (parseFloat(el.getAttribute('height')) || 0) / 2; }
-        const angle = parseFloat(window.getD(el, 'angle')) || 0; const fx = parseFloat(window.getD(el, 'flip-x')) || 1; const fy = parseFloat(window.getD(el, 'flip-y')) || 1;
+        if(el.tagName === 'text') { 
+            cx = parseFloat(el.getAttribute('x')) || 0; 
+            cy = parseFloat(el.getAttribute('y')) || 0; 
+        } else if(el.tagName !== 'path') { 
+            cx = (parseFloat(el.getAttribute('x')) || 0) + (parseFloat(el.getAttribute('width')) || 0) / 2; 
+            cy = (parseFloat(el.getAttribute('y')) || 0) + (parseFloat(el.getAttribute('height')) || 0) / 2; 
+        }
+        const angle = parseFloat(window.getD(el, 'angle')) || 0; 
+        const fx = parseFloat(window.getD(el, 'flip-x')) || 1; 
+        const fy = parseFloat(window.getD(el, 'flip-y')) || 1;
         el.setAttribute("transform", `rotate(${angle} ${cx} ${cy}) translate(${cx} ${cy}) scale(${fx} ${fy}) translate(${-cx} ${-cy})`);
         if(window.updateEditorUI) window.updateEditorUI(el);
     };
 
     window.pickColor = async function(id, dataKey, attrToSet) {
-        if (!window.EyeDropper) { window.showToast("Tarayıcınız renk seçici desteklemiyor.", "error"); return; }
-        try { const eyeDropper = new EyeDropper(); const result = await eyeDropper.open(); const color = result.sRGBHex; const el = document.getElementById(id); if(el) { window.addRecentColor(color); if (dataKey) window.setD(el, dataKey.replace(/([A-Z])/g, "-$1").toLowerCase(), color); if (dataKey === 'color1' || dataKey === 'color2' || dataKey === 'solidColor') window.applyFill(el); else { el.setAttribute(attrToSet, color); } window.saveState(); window.renderProperties(); } } catch (e) {}
+        if (!window.EyeDropper) { 
+            window.showToast("Tarayıcınız renk seçici desteklemiyor.", "error"); 
+            return; 
+        }
+        try { 
+            const eyeDropper = new EyeDropper(); 
+            const result = await eyeDropper.open(); 
+            const color = result.sRGBHex; 
+            const el = document.getElementById(id); 
+            if(el) { 
+                window.addRecentColor(color); 
+                if (dataKey) {
+                    window.setD(el, dataKey.replace(/([A-Z])/g, "-$1").toLowerCase(), color); 
+                }
+                if (dataKey === 'color1' || dataKey === 'color2' || dataKey === 'solidColor') {
+                    window.applyFill(el); 
+                } else { 
+                    el.setAttribute(attrToSet, color); 
+                } 
+                window.saveState(); 
+                window.renderProperties(); 
+            } 
+        } catch (e) {}
     };
     
-    window.applyRecentColor = function(id, color) { const el = document.getElementById(id); if(!el) return; const fillType = window.getD(el, 'fill-type') || 'solid'; if(fillType === 'solid') { window.setD(el, 'solid-color', color); window.applyFill(el); } else { window.setD(el, 'color1', color); window.applyFill(el); } window.saveState(); window.renderProperties(); };
+    window.applyRecentColor = function(id, color) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        const fillType = window.getD(el, 'fill-type') || 'solid'; 
+        if(fillType === 'solid') { 
+            window.setD(el, 'solid-color', color); 
+            window.applyFill(el); 
+        } else { 
+            window.setD(el, 'color1', color); 
+            window.applyFill(el); 
+        } 
+        window.saveState(); 
+        window.renderProperties(); 
+    };
 
     document.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
-        if (e.code === 'Space') { e.preventDefault(); isSpacePressed = true; document.getElementById('svg-wrapper').classList.add('pan-mode'); return; }
-        if (e.ctrlKey && e.key === 'z') { e.preventDefault(); window.undo(); return; } if (e.ctrlKey && e.key === 'y') { e.preventDefault(); window.redo(); return; }
-        if (selectedEl && window.getD(selectedEl, 'locked') !== "true") {
-            const step = e.shiftKey ? 10 : 1; let moved = false; let x = parseFloat(selectedEl.getAttribute("x")) || 0, y = parseFloat(selectedEl.getAttribute("y")) || 0;
-            if (e.key === 'ArrowUp') { y -= step; moved = true; } if (e.key === 'ArrowDown') { y += step; moved = true; } if (e.key === 'ArrowLeft') { x -= step; moved = true; } if (e.key === 'ArrowRight') { x += step; moved = true; }
-            if (moved) { e.preventDefault(); selectedEl.setAttribute("x", x); selectedEl.setAttribute("y", y); if(selectedEl.tagName === 'image' || selectedEl.tagName === 'rect') window.applyShapeMask(selectedEl); if(selectedEl.tagName === 'text') window.applyTextCurve(selectedEl); if(window.updateEditorUI) window.updateEditorUI(selectedEl); isModified = true; }
-            if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); selectedEl.remove(); document.getElementById('control-layer').innerHTML = ''; selectedEl = null; window.saveState(); window.renderEditor(); }
-            if (e.ctrlKey && e.key === 'c') { e.preventDefault(); clipboard = selectedEl.cloneNode(true); window.showToast("Kopyalandı");}
+        if (e.code === 'Space') { 
+            e.preventDefault(); 
+            isSpacePressed = true; 
+            document.getElementById('svg-wrapper').classList.add('pan-mode'); 
+            return; 
         }
-        if (e.ctrlKey && e.key === 'v' && clipboard) { e.preventDefault(); const clone = clipboard.cloneNode(true); clone.id = "el_" + Date.now(); clone.setAttribute("x", (parseFloat(clone.getAttribute("x")) || 0) + 30); clone.setAttribute("y", (parseFloat(clone.getAttribute("y")) || 0) + 30); document.querySelector('#canvas-inner svg').appendChild(clone); selectedEl = clone; window.saveState(); window.setupLayers(); window.updateEditorUI(clone); window.renderEditor(); window.showToast("Yapıştırıldı");}
+        if (e.ctrlKey && e.key === 'z') { e.preventDefault(); window.undo(); return; } 
+        if (e.ctrlKey && e.key === 'y') { e.preventDefault(); window.redo(); return; }
+        
+        if (selectedEl && window.getD(selectedEl, 'locked') !== "true") {
+            const step = e.shiftKey ? 10 : 1; 
+            let moved = false; 
+            let x = parseFloat(selectedEl.getAttribute("x")) || 0;
+            let y = parseFloat(selectedEl.getAttribute("y")) || 0;
+            
+            if (e.key === 'ArrowUp') { y -= step; moved = true; } 
+            if (e.key === 'ArrowDown') { y += step; moved = true; } 
+            if (e.key === 'ArrowLeft') { x -= step; moved = true; } 
+            if (e.key === 'ArrowRight') { x += step; moved = true; }
+            
+            if (moved) { 
+                e.preventDefault(); 
+                selectedEl.setAttribute("x", x); 
+                selectedEl.setAttribute("y", y); 
+                if(selectedEl.tagName === 'image' || selectedEl.tagName === 'rect') window.applyShapeMask(selectedEl); 
+                if(selectedEl.tagName === 'text') window.applyTextCurve(selectedEl); 
+                if(window.updateEditorUI) window.updateEditorUI(selectedEl); 
+                isModified = true; 
+            }
+            if (e.key === 'Delete' || e.key === 'Backspace') { 
+                e.preventDefault(); 
+                selectedEl.remove(); 
+                document.getElementById('control-layer').innerHTML = ''; 
+                selectedEl = null; 
+                window.saveState(); 
+                window.renderEditor(); 
+            }
+            if (e.ctrlKey && e.key === 'c') { 
+                e.preventDefault(); 
+                clipboard = selectedEl.cloneNode(true); 
+                window.showToast("Kopyalandı");
+            }
+        }
+        if (e.ctrlKey && e.key === 'v' && clipboard) { 
+            e.preventDefault(); 
+            const clone = clipboard.cloneNode(true); 
+            clone.id = "el_" + Date.now(); 
+            clone.setAttribute("x", (parseFloat(clone.getAttribute("x")) || 0) + 30); 
+            clone.setAttribute("y", (parseFloat(clone.getAttribute("y")) || 0) + 30); 
+            document.querySelector('#canvas-inner svg').appendChild(clone); 
+            selectedEl = clone; 
+            window.saveState(); 
+            window.setupLayers(); 
+            window.updateEditorUI(clone); 
+            window.renderEditor(); 
+            window.showToast("Yapıştırıldı");
+        }
     });
     
     document.addEventListener('keyup', (e) => { 
-        if (e.code === 'Space') { isSpacePressed = false; isPanning = false; document.getElementById('svg-wrapper').classList.remove('pan-mode'); document.getElementById('svg-wrapper').classList.remove('panning'); return; }
-        if(isModified && e.key.startsWith('Arrow')) { window.saveState(); isModified = false; } 
+        if (e.code === 'Space') { 
+            isSpacePressed = false; 
+            isPanning = false; 
+            document.getElementById('svg-wrapper').classList.remove('pan-mode'); 
+            document.getElementById('svg-wrapper').classList.remove('panning'); 
+            return; 
+        }
+        if(isModified && e.key.startsWith('Arrow')) { 
+            window.saveState(); 
+            isModified = false; 
+        } 
     });
 
     window.saveState = function() {
-        const svg = document.querySelector('#canvas-inner svg'); if (!svg) return;
-        document.getElementById('control-layer').innerHTML = ""; window.hideGuides(true); const state = svg.innerHTML; window.hideGuides(false);
-        if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
-        historyStack.push(state); historyIndex++; window.updateHistoryButtons(); window.renderLayers();
-        const now = new Date(); document.getElementById('status-time').innerText = `Son Kayıt: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        const svg = document.querySelector('#canvas-inner svg'); 
+        if (!svg) return;
+        document.getElementById('control-layer').innerHTML = ""; 
+        window.hideGuides(true); 
+        const state = svg.innerHTML; 
+        window.hideGuides(false);
+        if (historyIndex < historyStack.length - 1) {
+            historyStack = historyStack.slice(0, historyIndex + 1);
+        }
+        historyStack.push(state); 
+        historyIndex++; 
+        window.updateHistoryButtons(); 
+        window.renderLayers();
+        const now = new Date(); 
+        document.getElementById('status-time').innerText = `Son Kayıt: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
     };
     
     window.undo = function() { if (historyIndex > 0) { historyIndex--; window.restoreState(); } };
     window.redo = function() { if (historyIndex < historyStack.length - 1) { historyIndex++; window.restoreState(); } };
-    window.restoreState = function() { const svg = document.querySelector('#canvas-inner svg'); svg.innerHTML = historyStack[historyIndex]; document.getElementById('control-layer').innerHTML = ""; selectedEl = null; window.setupLayers(); window.updateHistoryButtons(); };
-    window.updateHistoryButtons = function() { document.getElementById('btn-undo').disabled = historyIndex <= 0; document.getElementById('btn-redo').disabled = historyIndex >= historyStack.length - 1; };
+    
+    window.restoreState = function() { 
+        const svg = document.querySelector('#canvas-inner svg'); 
+        svg.innerHTML = historyStack[historyIndex]; 
+        document.getElementById('control-layer').innerHTML = ""; 
+        selectedEl = null; 
+        window.setupLayers(); 
+        window.updateHistoryButtons(); 
+    };
+    
+    window.updateHistoryButtons = function() { 
+        document.getElementById('btn-undo').disabled = historyIndex <= 0; 
+        document.getElementById('btn-redo').disabled = historyIndex >= historyStack.length - 1; 
+    };
 
-    window.changeZoom = function(amount) { currentZoom = Math.max(0.3, Math.min(3, currentZoom + amount)); window.applyZoom(); window.syncRulerTransform(); };
-    window.resetZoom = function() { currentZoom = 1; panX = 0; panY = 0; window.applyZoom(); window.syncRulerTransform(); };
-    window.applyZoom = function() { document.getElementById('svg-wrapper').style.transform = `scale(${currentZoom}) translate(${panX}px, ${panY}px)`; document.getElementById('zoom-val').innerText = Math.round(currentZoom * 100) + "%"; };
+    window.changeZoom = function(amount) { 
+        currentZoom = Math.max(0.3, Math.min(3, currentZoom + amount)); 
+        window.applyZoom(); 
+        window.syncRulerTransform(); 
+    };
+    
+    window.resetZoom = function() { 
+        currentZoom = 1; panX = 0; panY = 0; 
+        window.applyZoom(); 
+        window.syncRulerTransform(); 
+    };
+    
+    window.applyZoom = function() { 
+        document.getElementById('svg-wrapper').style.transform = `scale(${currentZoom}) translate(${panX}px, ${panY}px)`; 
+        document.getElementById('zoom-val').innerText = Math.round(currentZoom * 100) + "%"; 
+    };
 
     window.moveLayer = function(id, dir) { 
-        const el = document.getElementById(id); if(!el) return; 
+        const el = document.getElementById(id); 
+        if(!el) return; 
         const parent = el.parentNode;
         
         if (dir === 'top') {
@@ -977,46 +1640,134 @@
             parent.insertBefore(el, el.previousElementSibling); 
         }
         
-        window.saveState(); if(window.updateEditorUI) window.updateEditorUI(el); window.renderEditor(); 
+        window.saveState(); 
+        if(window.updateEditorUI) window.updateEditorUI(el); 
+        window.renderEditor(); 
     };
 
     window.toggleVisibility = function(id) {
-        const el = document.getElementById(id); if(!el) return;
-        if (el.getAttribute('visibility') === 'hidden') { el.removeAttribute('visibility'); } else { el.setAttribute('visibility', 'hidden'); if (selectedEl === el) { selectedEl = null; document.getElementById('control-layer').innerHTML = ""; } }
-        window.saveState(); window.renderEditor();
+        const el = document.getElementById(id); 
+        if(!el) return;
+        
+        if (el.getAttribute('visibility') === 'hidden') { 
+            el.removeAttribute('visibility'); 
+        } else { 
+            el.setAttribute('visibility', 'hidden'); 
+            if (selectedEl === el) { 
+                selectedEl = null; 
+                document.getElementById('control-layer').innerHTML = ""; 
+            } 
+        }
+        window.saveState(); 
+        window.renderEditor();
     };
 
-    window.cloneElement = function(id) { const el = document.getElementById(id); if(!el) return; const clone = el.cloneNode(true); clone.id = "el_" + Date.now(); clone.setAttribute("x", (parseFloat(el.getAttribute("x")) || 0) + 30); clone.setAttribute("y", (parseFloat(el.getAttribute("y")) || 0) + 30); el.parentNode.insertBefore(clone, el.nextSibling); selectedEl = clone; clone.classList.add("duzenlenebilir"); window.saveState(); window.setupLayers(); window.updateEditorUI(clone); window.renderEditor(); };
-    window.toggleLock = function(id) { const el = document.getElementById(id); if(!el) return; const isLocked = window.getD(el, 'locked') === "true"; window.setD(el, 'locked', isLocked ? "false" : "true"); el.classList.toggle('locked', !isLocked); window.saveState(); window.renderEditor(); if(window.updateEditorUI) window.updateEditorUI(el); };
+    window.cloneElement = function(id) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        const clone = el.cloneNode(true); 
+        clone.id = "el_" + Date.now(); 
+        clone.setAttribute("x", (parseFloat(el.getAttribute("x")) || 0) + 30); 
+        clone.setAttribute("y", (parseFloat(el.getAttribute("y")) || 0) + 30); 
+        el.parentNode.insertBefore(clone, el.nextSibling); 
+        selectedEl = clone; 
+        clone.classList.add("duzenlenebilir"); 
+        window.saveState(); 
+        window.setupLayers(); 
+        window.updateEditorUI(clone); 
+        window.renderEditor(); 
+    };
+    
+    window.toggleLock = function(id) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        const isLocked = window.getD(el, 'locked') === "true"; 
+        window.setD(el, 'locked', isLocked ? "false" : "true"); 
+        el.classList.toggle('locked', !isLocked); 
+        window.saveState(); 
+        window.renderEditor(); 
+        if(window.updateEditorUI) window.updateEditorUI(el); 
+    };
     
     window.applyFilters = function(el) { 
-        const sx = parseFloat(window.getD(el, 'shadow-x')) || 0, sy = parseFloat(window.getD(el, 'shadow-y')) || 0, sb = parseFloat(window.getD(el, 'shadow-blur')) || 0, sc = window.getD(el, 'shadow-color') || '#000000'; 
-        const bri = parseFloat(window.getD(el, 'bri')) || 100, con = parseFloat(window.getD(el, 'con')) || 100, sat = parseFloat(window.getD(el, 'sat')) || 100, gray = parseFloat(window.getD(el, 'gray')) || 0, bl = parseFloat(window.getD(el, 'blur')) || 0; 
-        const blend = window.getD(el, 'blend') || 'normal'; let filterStr = ''; 
-        if (sx != 0 || sy != 0 || sb != 0) filterStr += `drop-shadow(${sx}px ${sy}px ${sb}px ${sc}) `; 
-        if (bri != 100) filterStr += `brightness(${bri}%) `; if (con != 100) filterStr += `contrast(${con}%) `; if (sat != 100) filterStr += `saturate(${sat}%) `; if (gray > 0) filterStr += `grayscale(${gray}%) `; if (bl > 0) filterStr += `blur(${bl}px) `;
-        el.style.filter = filterStr.trim(); el.style.mixBlendMode = blend; el.setAttribute('style', el.getAttribute('style') || ''); 
+        const sx = parseFloat(window.getD(el, 'shadow-x')) || 0;
+        const sy = parseFloat(window.getD(el, 'shadow-y')) || 0;
+        const sb = parseFloat(window.getD(el, 'shadow-blur')) || 0;
+        const sc = window.getD(el, 'shadow-color') || '#000000'; 
+        const bri = parseFloat(window.getD(el, 'bri')) || 100;
+        const con = parseFloat(window.getD(el, 'con')) || 100;
+        const sat = parseFloat(window.getD(el, 'sat')) || 100;
+        const gray = parseFloat(window.getD(el, 'gray')) || 0;
+        const bl = parseFloat(window.getD(el, 'blur')) || 0; 
+        const blend = window.getD(el, 'blend') || 'normal'; 
+        let filterStr = ''; 
+        
+        if (sx !== 0 || sy !== 0 || sb !== 0) filterStr += `drop-shadow(${sx}px ${sy}px ${sb}px ${sc}) `; 
+        if (bri !== 100) filterStr += `brightness(${bri}%) `; 
+        if (con !== 100) filterStr += `contrast(${con}%) `; 
+        if (sat !== 100) filterStr += `saturate(${sat}%) `; 
+        if (gray > 0) filterStr += `grayscale(${gray}%) `; 
+        if (bl > 0) filterStr += `blur(${bl}px) `;
+        
+        el.style.filter = filterStr.trim(); 
+        el.style.mixBlendMode = blend; 
+        el.setAttribute('style', el.getAttribute('style') || ''); 
     };
     
     window.applyFill = function(el) {
-        if(el.tagName === 'image') return; const type = window.getD(el, 'fill-type') || 'solid'; let fillVal = '';
-        if (type === 'gradient') {
-            const c1 = window.getD(el, 'color1') || '#10b981'; const c2 = window.getD(el, 'color2') || '#3b82f6';
-            const svg = document.querySelector('#canvas-inner svg'); let defs = svg.querySelector('defs'); if (!defs) { defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); svg.prepend(defs); }
-            let gradId = "grad_" + el.id; let grad = defs.querySelector("#" + gradId);
-            if (!grad) { grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient"); grad.id = gradId; grad.setAttribute("x1", "0%"); grad.setAttribute("y1", "0%"); grad.setAttribute("x2", "100%"); grad.setAttribute("y2", "100%"); const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop"); stop1.setAttribute("offset", "0%"); stop1.className = "stop1"; const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop"); stop2.setAttribute("offset", "100%"); stop2.className = "stop2"; grad.appendChild(stop1); grad.appendChild(stop2); defs.appendChild(grad); }
-            grad.querySelector(".stop1").setAttribute("stop-color", c1); grad.querySelector(".stop2").setAttribute("stop-color", c2);
-            fillVal = `url(#${gradId})`;
-        } else { fillVal = window.getD(el, 'solid-color') || '#000000'; }
+        if(el.tagName === 'image') return; 
+        const type = window.getD(el, 'fill-type') || 'solid'; 
+        let fillVal = '';
         
-        el.setAttribute("fill", fillVal); if(el.tagName !== 'path') el.style.fill = fillVal;
-        if(el.tagName === 'g' || el.tagName === 'svg') { el.querySelectorAll('path, circle, rect, polygon').forEach(child => { child.style.fill = fillVal; child.setAttribute('fill', fillVal); }); }
+        if (type === 'gradient') {
+            const c1 = window.getD(el, 'color1') || '#10b981'; 
+            const c2 = window.getD(el, 'color2') || '#3b82f6';
+            const svg = document.querySelector('#canvas-inner svg'); 
+            let defs = svg.querySelector('defs'); 
+            if (!defs) { 
+                defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); 
+                svg.prepend(defs); 
+            }
+            let gradId = "grad_" + el.id; 
+            let grad = defs.querySelector("#" + gradId);
+            if (!grad) { 
+                grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient"); 
+                grad.id = gradId; 
+                grad.setAttribute("x1", "0%"); 
+                grad.setAttribute("y1", "0%"); 
+                grad.setAttribute("x2", "100%"); 
+                grad.setAttribute("y2", "100%"); 
+                const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop"); 
+                stop1.setAttribute("offset", "0%"); 
+                stop1.className = "stop1"; 
+                const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop"); 
+                stop2.setAttribute("offset", "100%"); 
+                stop2.className = "stop2"; 
+                grad.appendChild(stop1); 
+                grad.appendChild(stop2); 
+                defs.appendChild(grad); 
+            }
+            grad.querySelector(".stop1").setAttribute("stop-color", c1); 
+            grad.querySelector(".stop2").setAttribute("stop-color", c2);
+            fillVal = `url(#${gradId})`;
+        } else { 
+            fillVal = window.getD(el, 'solid-color') || '#000000'; 
+        }
+        
+        el.setAttribute("fill", fillVal); 
+        if(el.tagName !== 'path') el.style.fill = fillVal;
+        
+        if(el.tagName === 'g' || el.tagName === 'svg') { 
+            el.querySelectorAll('path, circle, rect, polygon').forEach(child => { 
+                child.style.fill = fillVal; 
+                child.setAttribute('fill', fillVal); 
+            }); 
+        }
     };
 
     window.autoFitText = function(el) { 
         if (el.tagName !== 'text') return; 
         
-        // --- Kutuya Sabitleme (Bounding Box) Mantığı ---
         const boundRectId = window.getD(el, 'bound-rect');
         if (boundRectId) {
             const rect = document.getElementById(boundRectId);
@@ -1037,7 +1788,10 @@
                 el.removeAttribute('textLength');
                 el.removeAttribute('lengthAdjust');
                 const tp = el.querySelector('textPath');
-                if (tp) { tp.removeAttribute('textLength'); tp.removeAttribute('lengthAdjust'); }
+                if (tp) { 
+                    tp.removeAttribute('textLength'); 
+                    tp.removeAttribute('lengthAdjust'); 
+                }
             }
         }
 
@@ -1049,59 +1803,133 @@
             el.removeAttribute('textLength');
             el.removeAttribute('lengthAdjust');
             const tp = el.querySelector('textPath');
-            if (tp) { tp.removeAttribute('textLength'); tp.removeAttribute('lengthAdjust'); }
+            if (tp) { 
+                tp.removeAttribute('textLength'); 
+                tp.removeAttribute('lengthAdjust'); 
+            }
         }
 
-        el.style.fontSize = baseFs + "px"; el.setAttribute("font-size", baseFs); 
+        el.style.fontSize = baseFs + "px"; 
+        el.setAttribute("font-size", baseFs); 
         
         if (mw > 0 || mh > 0) { 
-            let bbox = {width:0, height:0}; try { bbox = el.getBBox(); } catch(e){} 
-            let scaleW = 1; let scaleH = 1;
-            if (mw > 0 && bbox.width > mw && bbox.width > 0) scaleW = mw / bbox.width;
-            if (mh > 0 && bbox.height > mh && bbox.height > 0) scaleH = mh / bbox.height;
+            let bbox = {width:0, height:0}; 
+            try { bbox = el.getBBox(); } catch(e){} 
+            let scaleW = 1; 
+            let scaleH = 1;
+            
+            if (mw > 0 && bbox.width > mw && bbox.width > 0) {
+                scaleW = mw / bbox.width;
+            }
+            if (mh > 0 && bbox.height > mh && bbox.height > 0) {
+                scaleH = mh / bbox.height;
+            }
+            
             const finalScale = Math.min(scaleW, scaleH);
             if(finalScale < 1) {
                 const newFs = baseFs * finalScale; 
-                el.style.fontSize = newFs + "px"; el.setAttribute("font-size", newFs); 
+                el.style.fontSize = newFs + "px"; 
+                el.setAttribute("font-size", newFs); 
             }
         }
     };
     
     window.applyTextCurve = function(el) {
-        if (el.tagName !== 'text') return; const curve = parseFloat(window.getD(el, 'curve')) || 0; if(!window.getD(el, 'raw-text')) window.setD(el, 'raw-text', el.textContent); const rawText = window.getD(el, 'raw-text');
+        if (el.tagName !== 'text') return; 
+        const curve = parseFloat(window.getD(el, 'curve')) || 0; 
+        if(!window.getD(el, 'raw-text')) {
+            window.setD(el, 'raw-text', el.textContent); 
+        }
+        const rawText = window.getD(el, 'raw-text');
         
-        el.innerHTML = ''; el.textContent = rawText; 
+        el.innerHTML = ''; 
+        el.textContent = rawText; 
         
         if (curve === 0) { 
             const style = window.getD(el, 'text-style') || 'normal';
             if(style !== 'normal') window.applyTextStyle(el.id, style, el.getAttribute('text-anchor'));
         } else {
-            const svg = document.querySelector('#canvas-inner svg'); let defs = svg.querySelector('defs'); if (!defs) { defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); svg.prepend(defs); }
-            const pathId = "curve_" + el.id; let curvePath = defs.querySelector("#" + pathId); if (!curvePath) { curvePath = document.createElementNS("http://www.w3.org/2000/svg", "path"); curvePath.id = pathId; curvePath.setAttribute("fill", "none"); defs.appendChild(curvePath); }
-            const x = parseFloat(el.getAttribute('x')) || 0; const y = parseFloat(el.getAttribute('y')) || 0; const curveStrength = curve * 2.5; 
+            const svg = document.querySelector('#canvas-inner svg'); 
+            let defs = svg.querySelector('defs'); 
+            if (!defs) { 
+                defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); 
+                svg.prepend(defs); 
+            }
+            const pathId = "curve_" + el.id; 
+            let curvePath = defs.querySelector("#" + pathId); 
+            if (!curvePath) { 
+                curvePath = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
+                curvePath.id = pathId; 
+                curvePath.setAttribute("fill", "none"); 
+                defs.appendChild(curvePath); 
+            }
+            const x = parseFloat(el.getAttribute('x')) || 0; 
+            const y = parseFloat(el.getAttribute('y')) || 0; 
+            const curveStrength = curve * 2.5; 
             curvePath.setAttribute("d", `M ${x - 1500}, ${y - curveStrength/2} Q ${x}, ${y + curveStrength} ${x + 1500}, ${y - curveStrength/2}`); 
             
             el.innerHTML = '';
             const tp = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
-            tp.setAttribute("href", "#" + pathId); tp.setAttribute("startOffset", "50%"); tp.setAttribute("text-anchor", "middle"); tp.textContent = rawText;
+            tp.setAttribute("href", "#" + pathId); 
+            tp.setAttribute("startOffset", "50%"); 
+            tp.setAttribute("text-anchor", "middle"); 
+            tp.textContent = rawText;
             
             const style = window.getD(el, 'text-style') || 'normal';
-            if(style === 'neon') { tp.setAttribute("font-weight", "bold"); tp.setAttribute("fill", "#ffffff"); tp.setAttribute("stroke", window.getD(el, 'solid-color')||"#000"); tp.setAttribute("stroke-width", "2"); tp.setAttribute("filter", `drop-shadow(0 0 15px ${window.getD(el, 'solid-color')||'#000'})`); } 
-            else if(style === '3d') { tp.setAttribute("font-weight", "bold"); tp.setAttribute("fill", window.getD(el, 'solid-color')||"#000"); tp.setAttribute("stroke", "#000000"); tp.setAttribute("stroke-width", "3"); tp.setAttribute("filter", `drop-shadow(6px 6px 0 #000000)`); } 
-            else if (style === 'hollow') { tp.setAttribute("fill", "none"); tp.setAttribute("stroke", window.getD(el, 'solid-color')||"#000"); tp.setAttribute("stroke-width", "4"); }
+            if(style === 'neon') { 
+                tp.setAttribute("font-weight", "bold"); 
+                tp.setAttribute("fill", "#ffffff"); 
+                tp.setAttribute("stroke", window.getD(el, 'solid-color')||"#000"); 
+                tp.setAttribute("stroke-width", "2"); 
+                tp.setAttribute("filter", `drop-shadow(0 0 15px ${window.getD(el, 'solid-color')||'#000'})`); 
+            } else if(style === '3d') { 
+                tp.setAttribute("font-weight", "bold"); 
+                tp.setAttribute("fill", window.getD(el, 'solid-color')||"#000"); 
+                tp.setAttribute("stroke", "#000000"); 
+                tp.setAttribute("stroke-width", "3"); 
+                tp.setAttribute("filter", `drop-shadow(6px 6px 0 #000000)`); 
+            } else if (style === 'hollow') { 
+                tp.setAttribute("fill", "none"); 
+                tp.setAttribute("stroke", window.getD(el, 'solid-color')||"#000"); 
+                tp.setAttribute("stroke-width", "4"); 
+            }
             
             const w = el.getAttribute('textLength');
-            if (w) { tp.setAttribute('textLength', w); tp.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
+            if (w) { 
+                tp.setAttribute('textLength', w); 
+                tp.setAttribute('lengthAdjust', 'spacingAndGlyphs'); 
+            }
             el.appendChild(tp);
-        } window.autoFitText(el);
+        } 
+        window.autoFitText(el);
     };
 
-    window.describeRoundedRect = function(r, s, x, y, w, h) { if (r <= 0) return `M ${x} ${y} H ${x + w} V ${y + h} H ${x} Z`; r = Math.min(r, w / 2, h / 2); const kappa = (4 * (r * (1 - s)) * Math.tan(Math.PI / 4)) / 3; const pts = [ [x + r, y], [x + w - r, y], [x + w, y + r], [x + w, y + h - r], [x + w - r, y + h], [x + r, y + h], [x, y + h - r], [x, y + r] ]; return `M ${pts[0][0]} ${pts[0][1]} L ${pts[1][0]} ${pts[1][1]} C ${pts[1][0] + kappa} ${pts[1][1]} ${pts[2][0]} ${pts[2][1] - kappa} ${pts[2][0]} ${pts[2][1]} L ${pts[3][0]} ${pts[3][1]} C ${pts[3][0]} ${pts[3][1] + kappa} ${pts[4][0] + kappa} ${pts[4][1]} ${pts[4][0]} ${pts[4][1]} L ${pts[5][0]} ${pts[5][1]} C ${pts[5][0] - kappa} ${pts[5][1]} ${pts[6][0]} ${pts[6][1] + kappa} ${pts[6][0]} ${pts[6][1]} L ${pts[7][0]} ${pts[7][1]} C ${pts[7][0]} ${pts[7][1] - kappa} ${pts[0][0] - kappa} ${pts[0][1]} ${pts[0][0]} ${pts[0][1]} Z`; };
+    window.describeRoundedRect = function(r, s, x, y, w, h) { 
+        if (r <= 0) return `M ${x} ${y} H ${x + w} V ${y + h} H ${x} Z`; 
+        r = Math.min(r, w / 2, h / 2); 
+        const kappa = (4 * (r * (1 - s)) * Math.tan(Math.PI / 4)) / 3; 
+        const pts = [ 
+            [x + r, y], [x + w - r, y], [x + w, y + r], [x + w, y + h - r], 
+            [x + w - r, y + h], [x + r, y + h], [x, y + h - r], [x, y + r] 
+        ]; 
+        return `M ${pts[0][0]} ${pts[0][1]} L ${pts[1][0]} ${pts[1][1]} C ${pts[1][0] + kappa} ${pts[1][1]} ${pts[2][0]} ${pts[2][1] - kappa} ${pts[2][0]} ${pts[2][1]} L ${pts[3][0]} ${pts[3][1]} C ${pts[3][0]} ${pts[3][1] + kappa} ${pts[4][0] + kappa} ${pts[4][1]} ${pts[4][0]} ${pts[4][1]} L ${pts[5][0]} ${pts[5][1]} C ${pts[5][0] - kappa} ${pts[5][1]} ${pts[6][0]} ${pts[6][1] + kappa} ${pts[6][0]} ${pts[6][1]} L ${pts[7][0]} ${pts[7][1]} C ${pts[7][0]} ${pts[7][1] - kappa} ${pts[0][0] - kappa} ${pts[0][1]} ${pts[0][0]} ${pts[0][1]} Z`; 
+    };
     
     // GELİŞMİŞ KIRPMA VE MASKELEME
     window.applyShapeMask = function(el) { 
-        if (el.tagName !== 'image' && el.tagName !== 'rect') return; if (!window.getD(el, 'mask-shape') || window.getD(el, 'mask-shape') === "none") { el.removeAttribute("clip-path"); return; }
-        const shape = window.getD(el, 'mask-shape'); const x = parseFloat(el.getAttribute('x')) || 0, y = parseFloat(el.getAttribute('y')) || 0, w = parseFloat(el.getAttribute('width')) || 0, h = parseFloat(el.getAttribute('height')) || 0; if(w === 0 || h === 0) return; let d = "";
+        if (el.tagName !== 'image' && el.tagName !== 'rect') return; 
+        if (!window.getD(el, 'mask-shape') || window.getD(el, 'mask-shape') === "none") { 
+            el.removeAttribute("clip-path"); 
+            return; 
+        }
+        const shape = window.getD(el, 'mask-shape'); 
+        const x = parseFloat(el.getAttribute('x')) || 0;
+        const y = parseFloat(el.getAttribute('y')) || 0;
+        const w = parseFloat(el.getAttribute('width')) || 0;
+        const h = parseFloat(el.getAttribute('height')) || 0; 
+        if(w === 0 || h === 0) return; 
+        
+        let d = "";
         
         if (shape === 'crop') {
             const ct = (parseFloat(window.getD(el, 'crop-t')) || 0) * h / 100;
@@ -1110,24 +1938,81 @@
             const cr = (parseFloat(window.getD(el, 'crop-r')) || 0) * w / 100;
             d = `M ${x + cl} ${y + ct} H ${x + w - cr} V ${y + h - cb} H ${x + cl} Z`;
         } 
-        else if (shape === 'circle') { const cx = x+w/2, cy = y+h/2, r = Math.min(w,h)/2; d = `M ${cx-r},${cy} A ${r},${r} 0 1,0 ${cx+r},${cy} A ${r},${r} 0 1,0 ${cx-r},${cy} Z`; } 
-        else if (shape === 'triangle') { d = `M ${x+w/2},${y} L ${x+w},${y+h} L ${x},${y+h} Z`; } 
-        else if (shape === 'star') { const cx = x+w/2, cy = y+h/2, outerR = Math.min(w,h)/2, innerR = outerR/2.5; for(let i=0; i<10; i++) { let r = i%2===0 ? outerR : innerR; let angle = (Math.PI/2) - (i * Math.PI/5); d += (i===0 ? "M " : " L ") + (cx + Math.cos(angle)*r) + "," + (cy - Math.sin(angle)*r); } d += " Z"; } 
-        else { let rx = parseFloat(window.getD(el, 'rx')) || 0; let sm = parseFloat(window.getD(el, 'smoothing')); if (isNaN(sm)) sm = 0.5; d = window.describeRoundedRect(rx, sm, x, y, w, h); }
+        else if (shape === 'circle') { 
+            const cx = x+w/2;
+            const cy = y+h/2;
+            const r = Math.min(w,h)/2; 
+            d = `M ${cx-r},${cy} A ${r},${r} 0 1,0 ${cx+r},${cy} A ${r},${r} 0 1,0 ${cx-r},${cy} Z`; 
+        } 
+        else if (shape === 'triangle') { 
+            d = `M ${x+w/2},${y} L ${x+w},${y+h} L ${x},${y+h} Z`; 
+        } 
+        else if (shape === 'star') { 
+            const cx = x+w/2;
+            const cy = y+h/2;
+            const outerR = Math.min(w,h)/2;
+            const innerR = outerR/2.5; 
+            for(let i=0; i<10; i++) { 
+                let r = i%2===0 ? outerR : innerR; 
+                let angle = (Math.PI/2) - (i * Math.PI/5); 
+                d += (i===0 ? "M " : " L ") + (cx + Math.cos(angle)*r) + "," + (cy - Math.sin(angle)*r); 
+            } 
+            d += " Z"; 
+        } 
+        else { 
+            let rx = parseFloat(window.getD(el, 'rx')) || 0; 
+            let sm = parseFloat(window.getD(el, 'smoothing')); 
+            if (isNaN(sm)) sm = 0.5; 
+            d = window.describeRoundedRect(rx, sm, x, y, w, h); 
+        }
         
-        const svg = document.querySelector('#canvas-inner svg'); let defs = svg.querySelector('defs'); if (!defs) { defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); svg.prepend(defs); } const clipId = "clip_" + el.id; let clipPath = defs.querySelector("#" + clipId); if (!clipPath) { clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath"); clipPath.id = clipId; const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); clipPath.appendChild(path); defs.appendChild(clipPath); el.setAttribute("clip-path", `url(#${clipId})`); } clipPath.querySelector('path').setAttribute("d", d); 
+        const svg = document.querySelector('#canvas-inner svg'); 
+        let defs = svg.querySelector('defs'); 
+        if (!defs) { 
+            defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); 
+            svg.prepend(defs); 
+        } 
+        const clipId = "clip_" + el.id; 
+        let clipPath = defs.querySelector("#" + clipId); 
+        if (!clipPath) { 
+            clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath"); 
+            clipPath.id = clipId; 
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
+            clipPath.appendChild(path); 
+            defs.appendChild(clipPath); 
+            el.setAttribute("clip-path", `url(#${clipId})`); 
+        } 
+        clipPath.querySelector('path').setAttribute("d", d); 
     };
 
     window.setupLayers = function() {
-        const mainSvg = document.querySelector('#canvas-inner svg'); const ctrl = document.getElementById('control-layer');
+        const mainSvg = document.querySelector('#canvas-inner svg'); 
+        const ctrl = document.getElementById('control-layer');
         if (!mainSvg) return;
-        if (!mainSvg.getAttribute('xmlns')) mainSvg.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+        
+        if (!mainSvg.getAttribute('xmlns')) {
+            mainSvg.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+        }
+        
         let w = 1920, h = 1080;
-        if (mainSvg.hasAttribute('viewBox')) { const vb = mainSvg.getAttribute('viewBox').split(/\s+|,/); if(vb.length >= 4) { w = parseFloat(vb[2]); h = parseFloat(vb[3]); } }
+        if (mainSvg.hasAttribute('viewBox')) { 
+            const vb = mainSvg.getAttribute('viewBox').split(/\s+|,/); 
+            if(vb.length >= 4) { 
+                w = parseFloat(vb[2]); 
+                h = parseFloat(vb[3]); 
+            } 
+        }
         ctrl.setAttribute("viewBox", `0 0 ${w} ${h}`);
         
         let editables = mainSvg.querySelectorAll('.duzenlenebilir');
-        if (editables.length === 0) { mainSvg.querySelectorAll('text, image, rect, g:not(#guides-group), svg:not(#control-layer), path:not(svg path):not(g path)').forEach(el => { if(el.id !== 'control-layer' && el.id !== 'canvas-background' && !el.closest('#control-layer') && !el.classList.contains('guide-line')) { el.classList.add('duzenlenebilir'); } }); }
+        if (editables.length === 0) { 
+            mainSvg.querySelectorAll('text, image, rect, g:not(#guides-group), svg:not(#control-layer), path:not(svg path):not(g path)').forEach(el => { 
+                if(el.id !== 'control-layer' && el.id !== 'canvas-background' && !el.closest('#control-layer') && !el.classList.contains('guide-line')) { 
+                    el.classList.add('duzenlenebilir'); 
+                } 
+            }); 
+        }
+        
         mainSvg.querySelectorAll('.duzenlenebilir').forEach(el => {
             if(!el.id) el.id = "el_" + Math.random().toString(36).substr(2,9);
             if(window.getD(el, 'locked') === "true") el.classList.add('locked');
@@ -1137,72 +2022,201 @@
             if(window.getD(el, 'shadow-blur') || window.getD(el, 'blur') || window.getD(el, 'blend')) window.applyFilters(el);
             if(window.getD(el, 'fill-type')) window.applyFill(el);
         });
-        window.initEngine(mainSvg); window.renderEditor(); window.updateRulers(); window.refreshAutoTextFields();
+        
+        window.initEngine(mainSvg); 
+        window.renderEditor(); 
+        window.updateRulers(); 
+        window.refreshAutoTextFields();
     };
 
     window.initEngine = function(svg) {
-        const wrapper = document.getElementById('svg-wrapper'); const ctrl = document.getElementById('control-layer');
-        const getCoords = (e) => { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const ctm = svg.getScreenCTM(); if (!ctm) return { x: 0, y: 0 }; const cursorpt = pt.matrixTransform(ctm.inverse()); return { x: cursorpt.x, y: cursorpt.y }; };
+        const wrapper = document.getElementById('svg-wrapper'); 
+        const ctrl = document.getElementById('control-layer');
+        const getCoords = (e) => { 
+            const pt = svg.createSVGPoint(); 
+            pt.x = e.clientX; 
+            pt.y = e.clientY; 
+            const ctm = svg.getScreenCTM(); 
+            if (!ctm) return { x: 0, y: 0 }; 
+            const cursorpt = pt.matrixTransform(ctm.inverse()); 
+            return { x: cursorpt.x, y: cursorpt.y }; 
+        };
 
         wrapper.onpointerdown = (e) => {
-            if (isSpacePressed) { isPanning = true; panStart = {x: e.clientX, y: e.clientY}; panOffsetStart = {x: panX, y: panY}; document.getElementById('svg-wrapper').classList.add('panning'); return; }
-            const p = getCoords(e); const target = e.target; isModified = false;
+            if (isSpacePressed) { 
+                isPanning = true; 
+                panStart = {x: e.clientX, y: e.clientY}; 
+                panOffsetStart = {x: panX, y: panY}; 
+                document.getElementById('svg-wrapper').classList.add('panning'); 
+                return; 
+            }
+            const p = getCoords(e); 
+            const target = e.target; 
+            isModified = false;
 
             if (isDrawingMode) {
-                isDrawing = true; currentPath = document.createElementNS("http://www.w3.org/2000/svg", "path"); currentPath.id = "pth_" + Date.now(); currentPath.setAttribute("class", "duzenlenebilir"); currentPath.setAttribute("fill", "none"); currentPath.setAttribute("stroke", "#10b981"); currentPath.setAttribute("stroke-width", "5"); currentPath.setAttribute("stroke-linecap", "round"); currentPath.setAttribute("stroke-linejoin", "round"); pathData = `M ${p.x} ${p.y}`; currentPath.setAttribute("d", pathData);
-                const guidesGroup = document.getElementById('guides-group'); if(guidesGroup) svg.insertBefore(currentPath, guidesGroup); else svg.appendChild(currentPath);
-                try { wrapper.setPointerCapture(e.pointerId); } catch(err){} return;
+                isDrawing = true; 
+                currentPath = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
+                currentPath.id = "pth_" + Date.now(); 
+                currentPath.setAttribute("class", "duzenlenebilir"); 
+                currentPath.setAttribute("fill", "none"); 
+                currentPath.setAttribute("stroke", "#10b981"); 
+                currentPath.setAttribute("stroke-width", "5"); 
+                currentPath.setAttribute("stroke-linecap", "round"); 
+                currentPath.setAttribute("stroke-linejoin", "round"); 
+                pathData = `M ${p.x} ${p.y}`; 
+                currentPath.setAttribute("d", pathData);
+                const guidesGroup = document.getElementById('guides-group'); 
+                if(guidesGroup) {
+                    svg.insertBefore(currentPath, guidesGroup); 
+                } else {
+                    svg.appendChild(currentPath);
+                }
+                try { wrapper.setPointerCapture(e.pointerId); } catch(err){} 
+                return;
             }
 
-            if (target.classList.contains('guide-line')) { isDraggingGuide = true; currentGuide = target; try { wrapper.setPointerCapture(e.pointerId); } catch(err){} e.preventDefault(); e.stopPropagation(); return; }
+            if (target.classList.contains('guide-line')) { 
+                isDraggingGuide = true; 
+                currentGuide = target; 
+                try { wrapper.setPointerCapture(e.pointerId); } catch(err){} 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                return; 
+            }
+            
             if (target.classList.contains('handle')) {
-                const el = document.getElementById(target.dataset.id); if (!el || window.getD(el, 'locked') === "true") return;
+                const el = document.getElementById(target.dataset.id); 
+                if (!el || window.getD(el, 'locked') === "true") return;
                 
                 let tempW = 0, tempH = 0;
-                if(el.tagName === 'text') { tempW = parseFloat(el.getAttribute("textLength")) || el.getBBox().width || 0; tempH = parseFloat(window.getD(el, "base-font-size")) || 80; }
-                else { tempW = parseFloat(el.getAttribute("width")) || 0; tempH = parseFloat(el.getAttribute("height")) || 0; }
+                if(el.tagName === 'text') { 
+                    tempW = parseFloat(el.getAttribute("textLength")) || el.getBBox().width || 0; 
+                    tempH = parseFloat(window.getD(el, "base-font-size")) || 80; 
+                } else { 
+                    tempW = parseFloat(el.getAttribute("width")) || 0; 
+                    tempH = parseFloat(el.getAttribute("height")) || 0; 
+                }
                 
-                startP = p; startData = { x: parseFloat(el.getAttribute("x")) || 0, y: parseFloat(el.getAttribute("y")) || 0, w: tempW, h: tempH, rx: parseFloat(window.getD(el, 'rx')) || 0, baseFontSize: parseFloat(window.getD(el, 'base-font-size')) || 60 };
-                if (target.classList.contains('handle-resize')) { resizingEl = el; activeHandle = target.dataset.handle; } else if (target.classList.contains('handle-rotate')) { rotatingEl = el; } else if (target.classList.contains('handle-radius')) { radiusingEl = el; }
-                try { wrapper.setPointerCapture(e.pointerId); } catch(err){} e.preventDefault(); e.stopPropagation(); return;
+                startP = p; 
+                startData = { 
+                    x: parseFloat(el.getAttribute("x")) || 0, 
+                    y: parseFloat(el.getAttribute("y")) || 0, 
+                    w: tempW, 
+                    h: tempH, 
+                    rx: parseFloat(window.getD(el, 'rx')) || 0, 
+                    baseFontSize: parseFloat(window.getD(el, 'base-font-size')) || 60 
+                };
+                
+                if (target.classList.contains('handle-resize')) { 
+                    resizingEl = el; 
+                    activeHandle = target.dataset.handle; 
+                } else if (target.classList.contains('handle-rotate')) { 
+                    rotatingEl = el; 
+                } else if (target.classList.contains('handle-radius')) { 
+                    radiusingEl = el; 
+                }
+                
+                try { wrapper.setPointerCapture(e.pointerId); } catch(err){} 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                return;
             }
             
             const el = target.closest('.duzenlenebilir');
             if (el) {
-                if (e.altKey && window.getD(el, 'locked') !== "true") { const clone = el.cloneNode(true); clone.id = "el_" + Date.now(); clone.classList.add("duzenlenebilir"); el.parentNode.insertBefore(clone, el.nextSibling); selectedEl = clone; } else { selectedEl = el; }
-                isDraggingElement = true; offset.x = p.x - (parseFloat(selectedEl.getAttribute("x")) || 0); offset.y = p.y - (parseFloat(selectedEl.getAttribute("y")) || 0); 
-                window.updateUI(selectedEl); window.renderEditor();
-                if(window.getD(selectedEl, 'locked') !== "true") { try { wrapper.setPointerCapture(e.pointerId); } catch(err){} }
+                if (e.altKey && window.getD(el, 'locked') !== "true") { 
+                    const clone = el.cloneNode(true); 
+                    clone.id = "el_" + Date.now(); 
+                    clone.classList.add("duzenlenebilir"); 
+                    el.parentNode.insertBefore(clone, el.nextSibling); 
+                    selectedEl = clone; 
+                } else { 
+                    selectedEl = el; 
+                }
+                isDraggingElement = true; 
+                offset.x = p.x - (parseFloat(selectedEl.getAttribute("x")) || 0); 
+                offset.y = p.y - (parseFloat(selectedEl.getAttribute("y")) || 0); 
+                window.updateUI(selectedEl); 
+                window.renderEditor();
+                if(window.getD(selectedEl, 'locked') !== "true") { 
+                    try { wrapper.setPointerCapture(e.pointerId); } catch(err){} 
+                }
             } else { 
-                if(!e.target.closest('#sidebar')) { selectedEl = null; ctrl.innerHTML = ""; window.renderEditor(); }
+                if(!e.target.closest('#sidebar')) { 
+                    selectedEl = null; 
+                    ctrl.innerHTML = ""; 
+                    window.renderEditor(); 
+                }
             }
         };
 
         window.onpointermove = (e) => {
-            if (isPanning) { panX = panOffsetStart.x + ((e.clientX - panStart.x) / currentZoom); panY = panOffsetStart.y + ((e.clientY - panStart.y) / currentZoom); window.applyZoom(); window.syncRulerTransform(); return; }
+            if (isPanning) { 
+                panX = panOffsetStart.x + ((e.clientX - panStart.x) / currentZoom); 
+                panY = panOffsetStart.y + ((e.clientY - panStart.y) / currentZoom); 
+                window.applyZoom(); 
+                window.syncRulerTransform(); 
+                return; 
+            }
+            
             const p = getCoords(e);
-            if (isDrawing && currentPath) { pathData += ` L ${p.x} ${p.y}`; currentPath.setAttribute("d", pathData); return; }
-            if (isDraggingGuide && currentGuide) { if(window.getD(currentGuide, 'type') === 'h') { currentGuide.setAttribute('y1', p.y); currentGuide.setAttribute('y2', p.y); } else { currentGuide.setAttribute('x1', p.x); currentGuide.setAttribute('x2', p.x); } return; }
+            
+            if (isDrawing && currentPath) { 
+                pathData += ` L ${p.x} ${p.y}`; 
+                currentPath.setAttribute("d", pathData); 
+                return; 
+            }
+            if (isDraggingGuide && currentGuide) { 
+                if(window.getD(currentGuide, 'type') === 'h') { 
+                    currentGuide.setAttribute('y1', p.y); 
+                    currentGuide.setAttribute('y2', p.y); 
+                } else { 
+                    currentGuide.setAttribute('x1', p.x); 
+                    currentGuide.setAttribute('x2', p.x); 
+                } 
+                return; 
+            }
+            
             if (!selectedEl && !resizingEl && !rotatingEl && !radiusingEl) return;
             if (selectedEl && window.getD(selectedEl, 'locked') === "true" && !resizingEl && !rotatingEl && !radiusingEl) return; 
+            
             if(isDraggingElement || resizingEl || rotatingEl || radiusingEl) e.preventDefault(); 
-            const dx = p.x - startP.x; const dy = p.y - startP.y;
-            let snapX = null, snapY = null; let distTextX = "", distTextY = ""; const snapTolerance = 15; 
+            
+            const dx = p.x - startP.x; 
+            const dy = p.y - startP.y;
+            let snapX = null, snapY = null; 
+            let distTextX = "", distTextY = ""; 
+            const snapTolerance = 15; 
             
             let w = 1920, h = 1080;
-            if (svg.hasAttribute('viewBox')) { const vb = svg.getAttribute('viewBox').split(/\s+|,/); if(vb.length >= 4) { w = parseFloat(vb[2]); h = parseFloat(vb[3]); } }
+            if (svg.hasAttribute('viewBox')) { 
+                const vb = svg.getAttribute('viewBox').split(/\s+|,/); 
+                if(vb.length >= 4) { 
+                    w = parseFloat(vb[2]); 
+                    h = parseFloat(vb[3]); 
+                } 
+            }
             const cx = w / 2, cy = h / 2;
 
             if (resizingEl) {
-                isModified = true; let { x, y, w, h } = startData;
-                if (activeHandle === 'br') { w += dx; h += dy; } else if (activeHandle === 'bl') { x += dx; w -= dx; h += dy; } else if (activeHandle === 'tr') { y += dy; w += dx; h -= dy; } else if (activeHandle === 'tl') { x += dx; y += dy; w -= dx; h -= dy; }
+                isModified = true; 
+                let { x, y, w, h } = startData;
+                
+                if (activeHandle === 'br') { w += dx; h += dy; } 
+                else if (activeHandle === 'bl') { x += dx; w -= dx; h += dy; } 
+                else if (activeHandle === 'tr') { y += dy; w += dx; h -= dy; } 
+                else if (activeHandle === 'tl') { x += dx; y += dy; w -= dx; h -= dy; }
                 
                 if (resizingEl.tagName === "text") { 
                     if(w > 10) { 
                         resizingEl.setAttribute('textLength', w); 
                         resizingEl.setAttribute('lengthAdjust', 'spacingAndGlyphs'); 
                         const tp = resizingEl.querySelector('textPath');
-                        if (tp) { tp.setAttribute('textLength', w); tp.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
+                        if (tp) { 
+                            tp.setAttribute('textLength', w); 
+                            tp.setAttribute('lengthAdjust', 'spacingAndGlyphs'); 
+                        }
                     }
                     if(h > 5) { window.setD(resizingEl, 'base-font-size', h); }
                     if(activeHandle.includes('l')) resizingEl.setAttribute('x', x);
@@ -1210,61 +2224,125 @@
                     window.applyTextCurve(resizingEl);
                 } 
                 else if (resizingEl.tagName === "image" || resizingEl.tagName === "rect" || resizingEl.tagName === "svg" || resizingEl.tagName === "g") { 
-                    if (w > 10 && h > 10) { resizingEl.setAttribute("x", x); resizingEl.setAttribute("y", y); resizingEl.setAttribute("width", w); resizingEl.setAttribute("height", h); if(resizingEl.tagName !== "svg" && resizingEl.tagName !== "g" && window.getD(resizingEl, 'mask-shape') && window.getD(resizingEl, 'mask-shape') !== "none") window.applyShapeMask(resizingEl); } 
+                    if (w > 10 && h > 10) { 
+                        resizingEl.setAttribute("x", x); 
+                        resizingEl.setAttribute("y", y); 
+                        resizingEl.setAttribute("width", w); 
+                        resizingEl.setAttribute("height", h); 
+                        if(resizingEl.tagName !== "svg" && resizingEl.tagName !== "g" && window.getD(resizingEl, 'mask-shape') && window.getD(resizingEl, 'mask-shape') !== "none") {
+                            window.applyShapeMask(resizingEl); 
+                        }
+                    } 
                 }
                 
                 window.updateUI(resizingEl);
                 if(resizingEl.tagName === 'rect' || resizingEl.tagName === 'image') {
-                    document.querySelectorAll(`text[data-bound-rect="${resizingEl.id}"]`).forEach(txt => { window.autoFitText(txt); });
+                    document.querySelectorAll(`text[data-bound-rect="${resizingEl.id}"]`).forEach(txt => { 
+                        window.autoFitText(txt); 
+                    });
                 }
             } 
             else if (rotatingEl) {
-                isModified = true; let bbox = {x:0, y:0, width:0, height:0}; try{ bbox = rotatingEl.getBBox(); }catch(e){}
+                isModified = true; 
+                let bbox = {x:0, y:0, width:0, height:0}; 
+                try{ bbox = rotatingEl.getBBox(); }catch(e){}
                 const angle = Math.atan2(p.y - (bbox.y + bbox.height/2), p.x - (bbox.x + bbox.width/2)) * (180 / Math.PI) + 90; 
-                window.setD(rotatingEl, 'angle', angle); window.applyTransforms(rotatingEl); window.updateUI(rotatingEl);
+                window.setD(rotatingEl, 'angle', angle); 
+                window.applyTransforms(rotatingEl); 
+                window.updateUI(rotatingEl);
             }
             else if (radiusingEl && (radiusingEl.tagName === "image" || radiusingEl.tagName === "rect")) {
-                isModified = true; window.setD(radiusingEl, 'rx', Math.max(0, Math.min(startData.w/2, startData.h/2, startData.rx + dy))); window.applyShapeMask(radiusingEl); window.updateUI(radiusingEl);
+                isModified = true; 
+                window.setD(radiusingEl, 'rx', Math.max(0, Math.min(startData.w/2, startData.h/2, startData.rx + dy))); 
+                window.applyShapeMask(radiusingEl); 
+                window.updateUI(radiusingEl);
             }
             else if (selectedEl && isDraggingElement) {
-                isModified = true; let newX = p.x - offset.x, newY = p.y - offset.y;
-                let bbox = {width:0, height:0}; try { bbox = selectedEl.getBBox(); }catch(e){}
-                const isTxt = selectedEl.tagName === 'text';
-                const elCx = isTxt ? newX : newX + bbox.width / 2; const elCy = isTxt ? newY : newY + bbox.height / 2;
-                const elLeft = isTxt ? newX - bbox.width/2 : newX; const elRight = isTxt ? newX + bbox.width/2 : newX + bbox.width;
-                const elTop = isTxt ? newY - bbox.height/2 : newY; const elBottom = isTxt ? newY + bbox.height/2 : newY + bbox.height;
-
-                // AKILLI KILAVUZ (SMART GUIDES) MERKEZ
-                if (Math.abs(elCx - cx) < snapTolerance) { snapX = cx; newX = isTxt ? cx : cx - bbox.width / 2; distTextX = `${Math.round(cx)}px`; }
-                if (Math.abs(elCy - cy) < snapTolerance) { snapY = cy; newY = isTxt ? cy : cy - bbox.height / 2; distTextY = `${Math.round(cy)}px`; }
+                isModified = true; 
+                let newX = p.x - offset.x, newY = p.y - offset.y;
+                let bbox = {width:0, height:0}; 
+                try { bbox = selectedEl.getBBox(); }catch(e){}
                 
-                document.querySelectorAll('.guide-line').forEach(g => { if (window.getD(g, 'type') === 'h') { const gy = parseFloat(g.getAttribute('y1')); if (Math.abs(elCy - gy) < snapTolerance) { snapY = gy; newY = isTxt ? gy : gy - bbox.height / 2; distTextY = `${Math.round(gy)}px`;} else if (Math.abs(elTop - gy) < snapTolerance) { snapY = gy; newY = isTxt ? gy + bbox.height/2 : gy; } else if (Math.abs(elBottom - gy) < snapTolerance) { snapY = gy; newY = isTxt ? gy - bbox.height/2 : gy - bbox.height; } } else { const gx = parseFloat(g.getAttribute('x1')); if (Math.abs(elCx - gx) < snapTolerance) { snapX = gx; newX = isTxt ? gx : gx - bbox.width / 2; distTextX = `${Math.round(gx)}px`;} else if (Math.abs(elLeft - gx) < snapTolerance) { snapX = gx; newX = isTxt ? gx + bbox.width/2 : gx; } else if (Math.abs(elRight - gx) < snapTolerance) { snapX = gx; newX = isTxt ? gx - bbox.width/2 : gx - bbox.width; } } });
+                const isTxt = selectedEl.tagName === 'text';
+                const elCx = isTxt ? newX : newX + bbox.width / 2; 
+                const elCy = isTxt ? newY : newY + bbox.height / 2;
+                const elLeft = isTxt ? newX - bbox.width/2 : newX; 
+                const elRight = isTxt ? newX + bbox.width/2 : newX + bbox.width;
+                const elTop = isTxt ? newY - bbox.height/2 : newY; 
+                const elBottom = isTxt ? newY + bbox.height/2 : newY + bbox.height;
+
+                if (Math.abs(elCx - cx) < snapTolerance) { 
+                    snapX = cx; newX = isTxt ? cx : cx - bbox.width / 2; distTextX = Math.round(cx) + "px"; 
+                }
+                if (Math.abs(elCy - cy) < snapTolerance) { 
+                    snapY = cy; newY = isTxt ? cy : cy - bbox.height / 2; distTextY = Math.round(cy) + "px"; 
+                }
+                
+                document.querySelectorAll('.guide-line').forEach(g => { 
+                    if (window.getD(g, 'type') === 'h') { 
+                        const gy = parseFloat(g.getAttribute('y1')); 
+                        if (Math.abs(elCy - gy) < snapTolerance) { 
+                            snapY = gy; newY = isTxt ? gy : gy - bbox.height / 2; distTextY = Math.round(gy) + "px";
+                        } else if (Math.abs(elTop - gy) < snapTolerance) { 
+                            snapY = gy; newY = isTxt ? gy + bbox.height/2 : gy; 
+                        } else if (Math.abs(elBottom - gy) < snapTolerance) { 
+                            snapY = gy; newY = isTxt ? gy - bbox.height/2 : gy - bbox.height; 
+                        } 
+                    } else { 
+                        const gx = parseFloat(g.getAttribute('x1')); 
+                        if (Math.abs(elCx - gx) < snapTolerance) { 
+                            snapX = gx; newX = isTxt ? gx : gx - bbox.width / 2; distTextX = Math.round(gx) + "px";
+                        } else if (Math.abs(elLeft - gx) < snapTolerance) { 
+                            snapX = gx; newX = isTxt ? gx + bbox.width/2 : gx; 
+                        } else if (Math.abs(elRight - gx) < snapTolerance) { 
+                            snapX = gx; newX = isTxt ? gx - bbox.width/2 : gx - bbox.width; 
+                        } 
+                    } 
+                });
 
                 Array.from(document.querySelectorAll('.duzenlenebilir')).filter(e => e !== selectedEl && window.getD(e, 'locked') !== "true").forEach(other => {
-                    let oBBox = {x:0, y:0, width:0, height:0}; try { oBBox = other.getBBox(); } catch(e){ return; }
+                    let oBBox = {x:0, y:0, width:0, height:0}; 
+                    try { oBBox = other.getBBox(); } catch(e){ return; }
                     const oIsTxt = other.tagName === 'text';
-                    const ox = parseFloat(other.getAttribute('x'))||0; const oy = parseFloat(other.getAttribute('y'))||0;
-                    const oLeft = oIsTxt ? ox - oBBox.width/2 : ox; const oRight = oIsTxt ? ox + oBBox.width/2 : ox + oBBox.width;
-                    const oTop = oIsTxt ? oy - oBBox.height/2 : oy; const oBottom = oIsTxt ? oy + oBBox.height/2 : oy + oBBox.height;
-                    const oCx = oLeft + oBBox.width/2; const oCy = oTop + oBBox.height/2;
+                    const ox = parseFloat(other.getAttribute('x'))||0; 
+                    const oy = parseFloat(other.getAttribute('y'))||0;
+                    
+                    const oLeft = oIsTxt ? ox - oBBox.width/2 : ox; 
+                    const oRight = oIsTxt ? ox + oBBox.width/2 : ox + oBBox.width;
+                    const oTop = oIsTxt ? oy - oBBox.height/2 : oy; 
+                    const oBottom = oIsTxt ? oy + oBBox.height/2 : oy + oBBox.height;
+                    const oCx = oLeft + oBBox.width/2; 
+                    const oCy = oTop + oBBox.height/2;
 
-                    // AKILLI KILAVUZ NESNELER ARASI
-                    if (Math.abs(elCx - oCx) < snapTolerance) { snapX = oCx; newX = isTxt ? oCx : oCx - bbox.width/2; distTextX = `Ortalandı`;}
+                    if (Math.abs(elCx - oCx) < snapTolerance) { 
+                        snapX = oCx; newX = isTxt ? oCx : oCx - bbox.width/2; distTextX = "Ortalandı";
+                    }
                     else if (Math.abs(elLeft - oLeft) < snapTolerance) { snapX = oLeft; newX = isTxt ? oLeft + bbox.width/2 : oLeft; }
                     else if (Math.abs(elRight - oRight) < snapTolerance) { snapX = oRight; newX = isTxt ? oRight - bbox.width/2 : oRight - bbox.width; }
 
-                    if (Math.abs(elCy - oCy) < snapTolerance) { snapY = oCy; newY = isTxt ? oCy : oCy - bbox.height/2; distTextY = `Ortalandı`;}
+                    if (Math.abs(elCy - oCy) < snapTolerance) { 
+                        snapY = oCy; newY = isTxt ? oCy : oCy - bbox.height/2; distTextY = "Ortalandı";
+                    }
                     else if (Math.abs(elTop - oTop) < snapTolerance) { snapY = oTop; newY = isTxt ? oTop + bbox.height/2 : oTop; }
                     else if (Math.abs(elBottom - oBottom) < snapTolerance) { snapY = oBottom; newY = isTxt ? oBottom - bbox.height/2 : oBottom - bbox.height; }
                 });
 
-                selectedEl.setAttribute("x", newX); selectedEl.setAttribute("y", newY);
-                if((selectedEl.tagName === 'image' || selectedEl.tagName === 'rect') && window.getD(selectedEl, 'mask-shape') && window.getD(selectedEl, 'mask-shape') !== "none") window.applyShapeMask(selectedEl); 
-                if(selectedEl.tagName === 'text' && window.getD(selectedEl, 'curve')) window.applyTextCurve(selectedEl);
+                selectedEl.setAttribute("x", newX); 
+                selectedEl.setAttribute("y", newY);
+                
+                if((selectedEl.tagName === 'image' || selectedEl.tagName === 'rect') && window.getD(selectedEl, 'mask-shape') && window.getD(selectedEl, 'mask-shape') !== "none") {
+                    window.applyShapeMask(selectedEl); 
+                }
+                if(selectedEl.tagName === 'text' && window.getD(selectedEl, 'curve')) {
+                    window.applyTextCurve(selectedEl);
+                }
                 
                 window.updateUI(selectedEl, snapX, snapY, distTextX, distTextY);
+                
                 if(selectedEl.tagName === 'rect' || selectedEl.tagName === 'image') {
-                    document.querySelectorAll(`text[data-bound-rect="${selectedEl.id}"]`).forEach(txt => { window.autoFitText(txt); });
+                    document.querySelectorAll(`text[data-bound-rect="${selectedEl.id}"]`).forEach(txt => { 
+                        window.autoFitText(txt); 
+                    });
                 }
             }
         };
@@ -1272,36 +2350,97 @@
         const release = (e) => { 
             try { wrapper.releasePointerCapture(e.pointerId); } catch(err){} 
             isDraggingElement = false; 
-            if (isPanning) { isPanning = false; document.getElementById('svg-wrapper').classList.remove('panning'); return; }
-            if (isDrawing) { isDrawing = false; selectedEl = currentPath; currentPath = null; isDrawingMode = false; document.getElementById('btn-draw').classList.remove('active'); document.getElementById('svg-wrapper').classList.remove('draw-mode'); window.saveState(); window.renderEditor(); window.updateUI(selectedEl); return; }
-            if (isDraggingGuide) { isDraggingGuide = false; currentGuide = null; window.saveState(); return; }
             
-            if (isModified) { window.saveState(); if(selectedEl) window.renderProperties(); }
-            resizingEl = null; rotatingEl = null; radiusingEl = null; activeHandle = null; isModified = false; 
+            if (isPanning) { 
+                isPanning = false; 
+                document.getElementById('svg-wrapper').classList.remove('panning'); 
+                return; 
+            }
+            if (isDrawing) { 
+                isDrawing = false; 
+                selectedEl = currentPath; 
+                currentPath = null; 
+                isDrawingMode = false; 
+                document.getElementById('btn-draw').classList.remove('active'); 
+                document.getElementById('svg-wrapper').classList.remove('draw-mode'); 
+                window.saveState(); 
+                window.renderEditor(); 
+                window.updateUI(selectedEl); 
+                return; 
+            }
+            if (isDraggingGuide) { 
+                isDraggingGuide = false; 
+                currentGuide = null; 
+                window.saveState(); 
+                return; 
+            }
+            
+            if (isModified) { 
+                window.saveState(); 
+                if(selectedEl) window.renderProperties(); 
+            }
+            
+            resizingEl = null; 
+            rotatingEl = null; 
+            radiusingEl = null; 
+            activeHandle = null; 
+            isModified = false; 
+            
             document.querySelectorAll('.snap-line').forEach(l=>l.remove()); 
             document.querySelectorAll('.snap-text').forEach(t=>t.remove()); 
         };
-        window.onpointerup = release; window.onpointercancel = release;
+        
+        window.onpointerup = release; 
+        window.onpointercancel = release;
     };
 
     window.updateUI = function(el, snapX=null, snapY=null, distTextX="", distTextY="") {
         const ctrl = document.getElementById('control-layer');
-        ctrl.innerHTML = ""; if(!el) return;
-        let b = {x:0,y:0,width:0,height:0}; try { b = el.getBBox(); }catch(e){return;}
-        const transform = el.getAttribute("transform") || ""; const isLocked = window.getD(el, 'locked') === "true";
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); g.setAttribute("transform", transform); ctrl.appendChild(g);
+        ctrl.innerHTML = ""; 
+        if(!el) return;
+        
+        let b = {x:0, y:0, width:0, height:0}; 
+        try { b = el.getBBox(); }catch(e){return;}
+        
+        const transform = el.getAttribute("transform") || ""; 
+        const isLocked = window.getD(el, 'locked') === "true";
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); 
+        g.setAttribute("transform", transform); 
+        ctrl.appendChild(g);
 
         const svg = document.querySelector('#canvas-inner svg');
         let w = 1920, h = 1080;
-        if (svg && svg.hasAttribute('viewBox')) { const vb = svg.getAttribute('viewBox').split(/\s+|,/); if(vb.length >= 4) { w = parseFloat(vb[2]); h = parseFloat(vb[3]); } }
+        if (svg && svg.hasAttribute('viewBox')) { 
+            const vb = svg.getAttribute('viewBox').split(/\s+|,/); 
+            if(vb.length >= 4) { w = parseFloat(vb[2]); h = parseFloat(vb[3]); } 
+        }
 
         if (snapX !== null) { 
-            const lX = document.createElementNS("http://www.w3.org/2000/svg", "line"); lX.setAttribute("x1", snapX); lX.setAttribute("y1", 0); lX.setAttribute("x2", snapX); lX.setAttribute("y2", h); lX.classList.add("snap-line"); ctrl.appendChild(lX); 
-            if(distTextX !== "") { const tx = document.createElementNS("http://www.w3.org/2000/svg", "text"); tx.setAttribute("x", snapX + 6); tx.setAttribute("y", b.y - 10); tx.textContent = distTextX; tx.classList.add("snap-text"); ctrl.appendChild(tx); }
+            const lX = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+            lX.setAttribute("x1", snapX); lX.setAttribute("y1", 0); lX.setAttribute("x2", snapX); lX.setAttribute("y2", h); 
+            lX.classList.add("snap-line"); 
+            ctrl.appendChild(lX); 
+            if(distTextX !== "") { 
+                const tx = document.createElementNS("http://www.w3.org/2000/svg", "text"); 
+                tx.setAttribute("x", snapX + 6); tx.setAttribute("y", b.y - 10); 
+                tx.textContent = distTextX; 
+                tx.classList.add("snap-text"); 
+                ctrl.appendChild(tx); 
+            }
         }
+        
         if (snapY !== null) { 
-            const lY = document.createElementNS("http://www.w3.org/2000/svg", "line"); lY.setAttribute("x1", 0); lY.setAttribute("y1", snapY); lY.setAttribute("x2", w); lY.setAttribute("y2", snapY); lY.classList.add("snap-line"); ctrl.appendChild(lY); 
-            if(distTextY !== "") { const ty = document.createElementNS("http://www.w3.org/2000/svg", "text"); ty.setAttribute("x", b.x + b.width + 10); ty.setAttribute("y", snapY - 6); ty.textContent = distTextY; ty.classList.add("snap-text"); ctrl.appendChild(ty); }
+            const lY = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+            lY.setAttribute("x1", 0); lY.setAttribute("y1", snapY); lY.setAttribute("x2", w); lY.setAttribute("y2", snapY); 
+            lY.classList.add("snap-line"); 
+            ctrl.appendChild(lY); 
+            if(distTextY !== "") { 
+                const ty = document.createElementNS("http://www.w3.org/2000/svg", "text"); 
+                ty.setAttribute("x", b.x + b.width + 10); ty.setAttribute("y", snapY - 6); 
+                ty.textContent = distTextY; 
+                ty.classList.add("snap-text"); 
+                ctrl.appendChild(ty); 
+            }
         }
 
         if (el.tagName === 'text' && ((parseFloat(window.getD(el, 'max-width')) || 0) > 0 || (parseFloat(window.getD(el, 'max-height')) || 0) > 0) && !isLocked) {
@@ -1313,21 +2452,54 @@
             const mwRect = document.createElementNS("http://www.w3.org/2000/svg", "rect"); 
             mwRect.setAttribute("x", cx - mw/2); mwRect.setAttribute("y", cy - mh/2); 
             mwRect.setAttribute("width", mw); mwRect.setAttribute("height", mh); 
-            mwRect.setAttribute("fill", "rgba(16, 185, 129, 0.05)"); mwRect.setAttribute("stroke", "var(--accent)"); mwRect.setAttribute("stroke-dasharray", "4,4"); g.appendChild(mwRect);
+            mwRect.setAttribute("fill", "rgba(16, 185, 129, 0.05)"); 
+            mwRect.setAttribute("stroke", "var(--accent)"); 
+            mwRect.setAttribute("stroke-dasharray", "4,4"); 
+            g.appendChild(mwRect);
         }
         
         const strokeColor = isLocked ? "var(--error)" : "var(--handle-move)";
-        const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"); r.setAttribute("x", b.x); r.setAttribute("y", b.y); r.setAttribute("width", b.width); r.setAttribute("height", b.height); r.setAttribute("fill", "none"); r.setAttribute("stroke", strokeColor); r.setAttribute("stroke-width", "2"); r.setAttribute("stroke-dasharray", "6,4"); g.appendChild(r);
+        const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"); 
+        r.setAttribute("x", b.x); r.setAttribute("y", b.y); r.setAttribute("width", b.width); r.setAttribute("height", b.height); 
+        r.setAttribute("fill", "none"); r.setAttribute("stroke", strokeColor); r.setAttribute("stroke-width", "2"); r.setAttribute("stroke-dasharray", "6,4"); 
+        g.appendChild(r);
         
         if (isLocked) return;
-        const s = 24; const corners = [{ id: 'tl', x: b.x, y: b.y, cur: 'nwse-resize' }, { id: 'tr', x: b.x + b.width, y: b.y, cur: 'nesw-resize' }, { id: 'bl', x: b.x, y: b.y + b.height, cur: 'nesw-resize' }, { id: 'br', x: b.x + b.width, y: b.y + b.height, cur: 'nwse-resize' }];
-        corners.forEach(c => { const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect"); rect.setAttribute("x", c.x - s/2); rect.setAttribute("y", c.y - s/2); rect.setAttribute("width", s); rect.setAttribute("height", s); rect.setAttribute("class", "handle handle-resize"); rect.dataset.id = el.id; rect.dataset.handle = c.id; rect.style.cursor = c.cur; g.appendChild(rect); });
         
-        const rotY = b.y - 40; const line = document.createElementNS("http://www.w3.org/2000/svg", "line"); line.setAttribute("x1", b.x + b.width/2); line.setAttribute("y1", b.y); line.setAttribute("x2", b.x + b.width/2); line.setAttribute("y2", rotY); line.setAttribute("stroke", "var(--handle-rotate)"); line.setAttribute("stroke-width", "2"); g.appendChild(line);
-        const rotH = document.createElementNS("http://www.w3.org/2000/svg", "circle"); rotH.setAttribute("cx", b.x + b.width/2); rotH.setAttribute("cy", rotY); rotH.setAttribute("r", s/2.5); rotH.setAttribute("class", "handle handle-rotate"); rotH.dataset.id = el.id; g.appendChild(rotH);
+        const s = 24; 
+        const corners = [
+            { id: 'tl', x: b.x, y: b.y, cur: 'nwse-resize' }, 
+            { id: 'tr', x: b.x + b.width, y: b.y, cur: 'nesw-resize' }, 
+            { id: 'bl', x: b.x, y: b.y + b.height, cur: 'nesw-resize' }, 
+            { id: 'br', x: b.x + b.width, y: b.y + b.height, cur: 'nwse-resize' }
+        ];
+        
+        corners.forEach(c => { 
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect"); 
+            rect.setAttribute("x", c.x - s/2); rect.setAttribute("y", c.y - s/2); rect.setAttribute("width", s); rect.setAttribute("height", s); 
+            rect.setAttribute("class", "handle handle-resize"); rect.dataset.id = el.id; rect.dataset.handle = c.id; rect.style.cursor = c.cur; 
+            g.appendChild(rect); 
+        });
+        
+        const rotY = b.y - 40; 
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+        line.setAttribute("x1", b.x + b.width/2); line.setAttribute("y1", b.y); line.setAttribute("x2", b.x + b.width/2); line.setAttribute("y2", rotY); 
+        line.setAttribute("stroke", "var(--handle-rotate)"); line.setAttribute("stroke-width", "2"); 
+        g.appendChild(line);
+        
+        const rotH = document.createElementNS("http://www.w3.org/2000/svg", "circle"); 
+        rotH.setAttribute("cx", b.x + b.width/2); rotH.setAttribute("cy", rotY); rotH.setAttribute("r", s/2.5); 
+        rotH.setAttribute("class", "handle handle-rotate"); rotH.dataset.id = el.id; 
+        g.appendChild(rotH);
 
         if ((el.tagName === "image" || el.tagName === "rect") && window.getD(el, 'mask-shape') && window.getD(el, 'mask-shape') === 'squircle') {
-            const radH = document.createElementNS("http://www.w3.org/2000/svg", "circle"); radH.setAttribute("cx", b.x + b.width); radH.setAttribute("cy", b.y + (parseFloat(window.getD(el, 'rx')) || 0)); radH.setAttribute("r", s/2.5); radH.setAttribute("class", "handle handle-radius"); radH.dataset.id = el.id; g.appendChild(radH);
+            const radH = document.createElementNS("http://www.w3.org/2000/svg", "circle"); 
+            radH.setAttribute("cx", b.x + b.width); 
+            radH.setAttribute("cy", b.y + (parseFloat(window.getD(el, 'rx')) || 0)); 
+            radH.setAttribute("r", s/2.5); 
+            radH.setAttribute("class", "handle handle-radius"); 
+            radH.dataset.id = el.id; 
+            g.appendChild(radH);
         }
     };
     
@@ -1346,36 +2518,51 @@
     window.renderEditor = function() { 
         window.renderLayers(); 
         window.refreshAutoTextFields();
-        if(selectedEl) window.renderProperties(); 
-        else document.getElementById('editor-fields').innerHTML = `
-            <div style="text-align:center; color:#64748b; margin-top:50px; font-style:italic; font-size:13px;">
-                <i class="ph ph-cursor-click" style="font-size:32px; display:block; margin-bottom:15px; color:var(--accent); opacity:0.5;"></i>
-                👆 Düzenlemek için sahneden veya katmanlardan bir nesne seçin.
-            </div>`;
+        if(selectedEl) {
+            window.renderProperties(); 
+        } else {
+            document.getElementById('editor-fields').innerHTML = `
+                <div style="text-align:center; color:#64748b; margin-top:50px; font-style:italic; font-size:13px;">
+                    <i class="ph ph-cursor-click" style="font-size:32px; display:block; margin-bottom:15px; color:var(--accent); opacity:0.5;"></i>
+                    👆 Düzenlemek için sahneden veya katmanlardan bir nesne seçin.
+                </div>`;
+        }
     };
 
     window.renderLayers = function() {
-        const list = document.getElementById('layers-list'); list.innerHTML = "";
+        const list = document.getElementById('layers-list'); 
+        list.innerHTML = "";
         const elements = Array.from(document.querySelectorAll('.duzenlenebilir')).reverse();
         document.getElementById('status-count').innerText = `Nesne Sayısı: ${elements.length}`;
         
         elements.forEach((el) => {
-            const isLocked = window.getD(el, 'locked') === "true"; const isActive = selectedEl === el;
+            const isLocked = window.getD(el, 'locked') === "true"; 
+            const isActive = selectedEl === el;
             const isHidden = el.getAttribute('visibility') === 'hidden';
+            
             let typeName = el.tagName.toUpperCase(); 
             let icon = 'ph-square';
             if (typeName === 'RECT') { typeName = 'ŞEKİL'; icon = 'ph-square'; } 
             if (typeName === 'G' || typeName === 'SVG') { typeName = 'İKON'; icon = 'ph-shapes'; } 
             if (typeName === 'PATH') { typeName = 'ÇİZİM'; icon = 'ph-scribble-loop'; } 
             if (typeName === 'IMAGE') { typeName = 'RESİM'; icon = 'ph-image'; }
-            if (el.tagName === 'text') { let txt = window.getD(el, 'raw-text') || el.textContent; typeName = `T: ${txt.substring(0,10)}${txt.length>10?'...':''}`; icon = 'ph-text-t'; }
+            if (el.tagName === 'text') { 
+                let txt = window.getD(el, 'raw-text') || el.textContent; 
+                typeName = `T: ${txt.substring(0,10)}${txt.length>10?'...':''}`; 
+                icon = 'ph-text-t'; 
+            }
 
-            const item = document.createElement('div'); item.className = `layer-item ${isActive ? 'active' : ''}`;
+            const item = document.createElement('div'); 
+            item.className = `layer-item ${isActive ? 'active' : ''}`;
+            
             item.onclick = (e) => { 
                 if(e.target.closest('.layer-btn')) return; 
-                selectedEl = el; isDraggingElement = false; 
-                if(window.updateEditorUI) window.updateEditorUI(el); window.renderEditor(); 
+                selectedEl = el; 
+                isDraggingElement = false; 
+                if(window.updateEditorUI) window.updateEditorUI(el); 
+                window.renderEditor(); 
             };
+            
             item.innerHTML = `
             <div style="display:flex; align-items:center; gap:8px; flex:1; overflow:hidden;">
                 <i class="ph ${icon}" style="color:var(--accent);"></i>
@@ -1394,25 +2581,41 @@
         });
     };
 
-    function createPropGroup(title, content) { return `<div class="prop-group"><div class="prop-group-title">${title}</div>${content}</div>`; }
+    function createPropGroup(title, content) {
+        return `<div class="prop-group"><div class="prop-group-title">${title}</div>${content}</div>`;
+    }
 
     // ÖZELLİKLER PANELİ (SEKMELİ)
     window.renderProperties = function() {
         const f = document.getElementById('editor-fields');
-        if (!selectedEl || !selectedEl.tagName) { window.renderEditor(); return; }
+        if (!selectedEl || !selectedEl.tagName) { 
+            window.renderEditor(); 
+            return; 
+        }
         
         try {
-            const el = selectedEl; const id = el.id; const tag = el.tagName.toLowerCase();
-            const isLocked = window.getD(el, 'locked') === "true"; const isPath = tag === 'path'; const isText = tag === 'text'; const isShape = tag === 'rect'; const isImage = tag === 'image'; const isIcon = tag === 'svg' || tag === 'g';
+            const el = selectedEl; 
+            const id = el.id; 
+            const tag = el.tagName.toLowerCase();
+            const isLocked = window.getD(el, 'locked') === "true"; 
+            const isPath = tag === 'path'; 
+            const isText = tag === 'text'; 
+            const isShape = tag === 'rect'; 
+            const isImage = tag === 'image'; 
+            const isIcon = tag === 'svg' || tag === 'g';
             
-            let typeName = tag.toUpperCase(); let headerIcon = 'ph-square';
+            let typeName = tag.toUpperCase(); 
+            let headerIcon = 'ph-square';
             if (isShape) { typeName = 'ŞEKİL'; headerIcon = 'ph-square'; } 
             if (isIcon) { typeName = 'İKON'; headerIcon = 'ph-shapes'; } 
             if (isPath) { typeName = 'ÇİZİM'; headerIcon = 'ph-scribble-loop'; } 
             if (isImage) { typeName = 'RESİM'; headerIcon = 'ph-image'; } 
             if (isText) { typeName = 'METİN'; headerIcon = 'ph-text-t'; }
 
-            let layoutHtml = ""; let styleHtml = ""; let textHtml = ""; let codeHtml = "";
+            let layoutHtml = ""; 
+            let styleHtml = ""; 
+            let textHtml = ""; 
+            let codeHtml = "";
 
             let headerHtml = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid var(--border);">
@@ -1459,7 +2662,8 @@
 
             if (!isPath) {
                 let bbox = {x:0, y:0, width:0, height:0}; try { bbox = el.getBBox(); } catch(e){}
-                const x = Math.round(parseFloat(el.getAttribute("x")) || bbox.x || 0); const y = Math.round(parseFloat(el.getAttribute("y")) || bbox.y || 0);
+                const x = Math.round(parseFloat(el.getAttribute("x")) || bbox.x || 0); 
+                const y = Math.round(parseFloat(el.getAttribute("y")) || bbox.y || 0);
                 let w = 0, h = 0;
                 
                 if(isText) { 
@@ -1503,16 +2707,19 @@
                 layoutHtml += createPropGroup("<i class='ph ph-arrows-clockwise'></i> Dönüştürme", transHtml);
             }
 
-            // GELİŞMİŞ KIRPMA VE MASKELEME
             if (isShape || isImage) {
-                const rx = parseFloat(window.getD(el, 'rx')) || 0; const maskShape = window.getD(el, 'mask-shape') || 'none';
-                let bbox = {width:0, height:0}; try { bbox = el.getBBox(); }catch(e){} const maxR = Math.min(bbox.width, bbox.height) / 2;
+                const rx = parseFloat(window.getD(el, 'rx')) || 0; 
+                const maskShape = window.getD(el, 'mask-shape') || 'none';
+                let bbox = {width:0, height:0}; try { bbox = el.getBBox(); }catch(e){} 
+                const maxR = Math.min(bbox.width, bbox.height) / 2;
                 
                 let formHtml = `<div class="label-text" style="margin-bottom:5px;">MASKELEME ŞEKLİ</div><select class="font-select" style="margin-bottom:15px;" onchange="window.changeSetting('${id}', 'mask-shape', this.value); window.renderProperties(); window.saveState();"><option value="none" ${maskShape === 'none' ? 'selected' : ''}>Yok (Düz)</option><option value="squircle" ${maskShape === 'squircle' ? 'selected' : ''}>Oval Kare (Squircle)</option><option value="circle" ${maskShape === 'circle' ? 'selected' : ''}>Daire</option><option value="triangle" ${maskShape === 'triangle' ? 'selected' : ''}>Üçgen</option><option value="star" ${maskShape === 'star' ? 'selected' : ''}>Yıldız</option><option value="crop" ${maskShape === 'crop' ? 'selected' : ''}>✂️ GELİŞMİŞ KIRPMA</option></select>`;
                 
                 if(maskShape === 'crop') {
-                    const ct = parseFloat(window.getD(el, 'crop-t')) || 0; const cb = parseFloat(window.getD(el, 'crop-b')) || 0;
-                    const cl = parseFloat(window.getD(el, 'crop-l')) || 0; const cr = parseFloat(window.getD(el, 'crop-r')) || 0;
+                    const ct = parseFloat(window.getD(el, 'crop-t')) || 0; 
+                    const cb = parseFloat(window.getD(el, 'crop-b')) || 0;
+                    const cl = parseFloat(window.getD(el, 'crop-l')) || 0; 
+                    const cr = parseFloat(window.getD(el, 'crop-r')) || 0;
                     formHtml += `
                     <div style="background:rgba(16, 185, 129, 0.1); border:1px solid #10b981; border-radius:8px; padding:10px;">
                         <div class="label-row"><span class="label-text">ÜSTTEN KIRP (%)</span><span class="value-badge" id="val-crop-t-${id}">${ct}%</span></div>
@@ -1538,188 +2745,20 @@
                 layoutHtml += createPropGroup("<i class='ph ph-scissors'></i> Form & Maskeleme", formHtml);
             }
 
+
             // --- 2. STİL SEKMESİ ---
             if (!isImage) {
-                const fillType = window.getD(el, 'fill-type') || 'solid'; const col1 = window.getD(el, 'color1') || '#10b981'; const col2 = window.getD(el, 'color2') || '#3b82f6'; const solidCol = window.getD(el, 'solid-color') || (el.getAttribute('fill') === 'none' ? el.getAttribute('stroke') : el.getAttribute('fill')) || "#ffffff";
-                let swatchHtml = `<div class="label-text" style="margin-top:15px; margin-bottom:8px;">PROJE RENKLERİ</div><div class="swatch-container">` + recentColors.map(c => `<div class="color-swatch" style="background:${c}" onclick="window.applyRecentColor('${id}', '${c}')" title="${c}"></div>`).join('') + `</div>`;
+                const fillType = window.getD(el, 'fill-type') || 'solid'; 
+                const col1 = window.getD(el, 'color1') || '#10b981'; 
+                const col2 = window.getD(el, 'color2') || '#3b82f6'; 
+                const solidCol = window.getD(el, 'solid-color') || (el.getAttribute('fill') === 'none' ? el.getAttribute('stroke') : el.getAttribute('fill')) || "#ffffff";
+                
+                let swatchArrayHtml = recentColors.map(c => `<div class="color-swatch" style="background:${c}" onclick="window.applyRecentColor('${id}', '${c}')" title="${c}"></div>`).join('');
+                let swatchHtml = `<div class="label-text" style="margin-top:15px; margin-bottom:8px;">PROJE RENKLERİ</div><div class="swatch-container">${swatchArrayHtml}</div>`;
+                
                 let fillHtml = `<div class="label-text" style="margin-bottom:5px;">DOLGU TİPİ</div><select class="font-select" style="margin-bottom:15px;" onchange="window.changeSetting('${id}', 'fill-type', this.value); window.renderProperties(); window.saveState();"><option value="solid" ${fillType === 'solid' ? 'selected' : ''}>Düz Renk</option><option value="gradient" ${fillType === 'gradient' ? 'selected' : ''}>Renk Geçişi (Gradient)</option></select>`;
-                if (fillType === 'solid') { fillHtml += `<div class="label-text" style="margin-bottom:5px;">${isPath?'ÇİZGİ':'İÇ'} RENK</div><div style="display:flex; gap:10px; align-items:center;"><input type="color" value="${safeColor(solidCol)}" oninput="window.changeSetting('${id}', 'solid-color', this.value); this.nextElementSibling.nextElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();" style="width:45px; height:45px; cursor:pointer; border:none; background:none; border-radius:8px;"><button class="action-btn" style="flex:0 0 45px; padding:12px; background:#334155; font-size:18px;" onclick="window.pickColor('${id}', 'solidColor', 'fill')" title="Göz Damlası"><i class="ph ph-eyedropper"></i></button><input type="text" value="${safeColor(solidCol)}" style="flex:1;" oninput="window.changeSetting('${id}', 'solid-color', this.value); this.previousElementSibling.previousElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();"></div>`; } 
-                else { fillHtml += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="input-group"><span class="label-text">RENK 1</span><div style="display:flex; gap:5px; align-items:center;"><input type="color" value="${safeColor(col1)}" oninput="window.changeSetting('${id}', 'color1', this.value);" onchange="window.addRecentColor(this.value); window.saveState();" style="width:35px; height:35px; cursor:pointer; border:none; background:none;"><button class="action-btn" style="padding:8px; background:#334155; font-size:16px;" onclick="window.pickColor('${id}', 'color1', '')"><i class="ph ph-eyedropper"></i></button></div></div><div class="input-group"><span class="label-text">RENK 2</span><div style="display:flex; gap:5px; align-items:center;"><input type="color" value="${safeColor(col2)}" oninput="window.changeSetting('${id}', 'color2', this.value);" onchange="window.addRecentColor(this.value); window.saveState();" style="width:35px; height:35px; cursor:pointer; border:none; background:none;"><button class="action-btn" style="padding:8px; background:#334155; font-size:16px;" onclick="window.pickColor('${id}', 'color2', '')"><i class="ph ph-eyedropper"></i></button></div></div></div>`; }
-                fillHtml += swatchHtml;
-                styleHtml += createPropGroup("<i class='ph ph-paint-bucket'></i> Dolgu & Renk", fillHtml);
-            }
-
-            const strokeCol = el.getAttribute('stroke') || '#000000'; const strokeW = parseFloat(el.getAttribute('stroke-width')) || 0; const dash = el.getAttribute('stroke-dasharray') || 'none';
-            let strokeHtml = `<div class="label-text" style="margin-bottom:5px;">ÇİZGİ RENGİ</div><div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;"><input type="color" value="${safeColor(strokeCol)}" oninput="const t=document.getElementById('${id}'); t.setAttribute('stroke', this.value); t.setAttribute('paint-order', 'stroke fill'); t.setAttribute('stroke-linejoin', 'round'); this.nextElementSibling.nextElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();" style="width:45px; height:45px; cursor:pointer; border:none; background:none; border-radius:8px;"><button class="action-btn" style="flex:0 0 45px; padding:12px; background:#334155; font-size:18px;" onclick="window.pickColor('${id}', '', 'stroke')" title="Göz Damlası"><i class="ph ph-eyedropper"></i></button><input type="text" value="${safeColor(strokeCol)}" style="flex:1;" oninput="const t=document.getElementById('${id}'); t.setAttribute('stroke', this.value); t.setAttribute('paint-order', 'stroke fill'); t.setAttribute('stroke-linejoin', 'round'); this.previousElementSibling.previousElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();"></div>
-            <div class="label-row"><span class="label-text">KALINLIK</span><span class="value-badge" id="val-sw-${id}">${strokeW}px</span></div>
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                <input type="range" min="0" max="50" value="${strokeW}" style="flex:1;" oninput="const t=document.getElementById('${id}'); t.setAttribute('stroke-width', this.value); t.setAttribute('paint-order', 'stroke fill'); document.getElementById('val-sw-${id}').innerText=this.value+'px'; this.nextElementSibling.value=this.value;" onchange="window.saveState()">
-                <input type="number" value="${strokeW}" style="width:70px; padding:8px;" oninput="const t=document.getElementById('${id}'); t.setAttribute('stroke-width', this.value); t.setAttribute('paint-order', 'stroke fill'); document.getElementById('val-sw-${id}').innerText=this.value+'px'; this.previousElementSibling.value=this.value;" onchange="window.saveState()">
-            </div>
-            <div class="label-text" style="margin-bottom:5px;">ÇİZGİ TİPİ</div>
-            <select class="font-select" onchange="document.getElementById('${id}').setAttribute('stroke-dasharray', this.value); window.saveState();"><option value="none" ${dash === 'none' ? 'selected' : ''}>Düz</option><option value="5,5" ${dash === '5,5' ? 'selected' : ''}>Kesikli</option><option value="2,2" ${dash === '2,2' ? 'selected' : ''}>Noktalı</option></select>`;
-            styleHtml += createPropGroup("<i class='ph ph-square-logo'></i> Kenarlık & Çizgi", strokeHtml);
-
-            let opacityVal = parseFloat(el.getAttribute('opacity')); if (isNaN(opacityVal)) opacityVal = 1;
-            const sX = parseFloat(window.getD(el, 'shadow-x')) || 0, sY = parseFloat(window.getD(el, 'shadow-y')) || 0, sB = parseFloat(window.getD(el, 'shadow-blur')) || 0, sC = window.getD(el, 'shadow-color') || '#000000', bl = parseFloat(window.getD(el, 'blur')) || 0; const blend = window.getD(el, 'blend') || 'normal';
-            
-            let fxHtml = `
-            <div class="label-row"><span class="label-text">SAYDAMLIK (OPACITY)</span><span class="value-badge" id="val-opacity-${id}">${Math.round(opacityVal*100)}%</span></div>
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                <input type="range" min="0" max="1" step="0.05" value="${opacityVal}" style="flex:1;" oninput="window.changeFilter('${id}', 'opacity', this.value, this);" onchange="window.saveState()">
-                <input type="number" min="0" max="1" step="0.05" value="${opacityVal}" style="width:70px; padding:8px;" oninput="window.changeFilter('${id}', 'opacity', this.value, this);" onchange="window.saveState()">
-            </div>
-            <div class="label-text" style="margin-bottom:5px;">KARIŞIM MODU (BLEND)</div>
-            <select class="font-select" style="margin-bottom:15px;" onchange="window.changeFilter('${id}', 'blend', this.value); window.saveState();">
-                <option value="normal" ${blend === 'normal' ? 'selected' : ''}>Normal</option><option value="multiply" ${blend === 'multiply' ? 'selected' : ''}>Çoğalt (Multiply)</option><option value="screen" ${blend === 'screen' ? 'selected' : ''}>Ekran (Screen)</option><option value="overlay" ${blend === 'overlay' ? 'selected' : ''}>Kaplama (Overlay)</option>
-            </select>
-            <div class="group-box">
-                <div class="label-text" style="color:white; margin-bottom:10px;"><i class="ph ph-drop-half-bottom"></i> GÖLGE VE BLUR</div>
-                <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                    <input type="color" value="${sC}" oninput="window.changeFilter('${id}', 'shadow-color', this.value); this.nextElementSibling.nextElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();" style="width:40px; height:40px; cursor:pointer; border-radius:8px; border:none; background:none;">
-                    <button class="action-btn" style="padding:10px; background:#334155; font-size:16px;" onclick="window.pickColor('${id}', 'shadow-color', '')"><i class="ph ph-eyedropper"></i></button>
-                    <input type="text" value="${sC}" style="flex:1;" oninput="window.changeFilter('${id}', 'shadow-color', this.value); this.previousElementSibling.previousElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();">
-                </div>
-                <div class="label-row"><span class="label-text">GÖLGE X</span><span class="value-badge" id="val-shadow-x-${id}">${sX}px</span></div>
-                <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                    <input type="range" min="-100" max="100" value="${sX}" style="flex:1;" oninput="window.changeFilter('${id}', 'shadow-x', this.value, this);" onchange="window.saveState()">
-                    <input type="number" value="${sX}" style="width:70px; padding:8px;" oninput="window.changeFilter('${id}', 'shadow-x', this.value, this);" onchange="window.saveState()">
-                </div>
-                <div class="label-row"><span class="label-text">GÖLGE Y</span><span class="value-badge" id="val-shadow-y-${id}">${sY}px</span></div>
-                <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                    <input type="range" min="-100" max="100" value="${sY}" style="flex:1;" oninput="window.changeFilter('${id}', 'shadow-y', this.value, this);" onchange="window.saveState()">
-                    <input type="number" value="${sY}" style="width:70px; padding:8px;" oninput="window.changeFilter('${id}', 'shadow-y', this.value, this);" onchange="window.saveState()">
-                </div>
-                <div class="label-row"><span class="label-text">GÖLGE YAYILMASI</span><span class="value-badge" id="val-shadow-blur-${id}">${sB}px</span></div>
-                <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                    <input type="range" min="0" max="100" value="${sB}" style="flex:1;" oninput="window.changeFilter('${id}', 'shadow-blur', this.value, this);" onchange="window.saveState()">
-                    <input type="number" value="${sB}" style="width:70px; padding:8px;" oninput="window.changeFilter('${id}', 'shadow-blur', this.value, this);" onchange="window.saveState()">
-                </div>
-                <div class="label-row"><span class="label-text">NESNE BULANIKLIĞI</span><span class="value-badge" id="val-blur-${id}">${bl}px</span></div>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <input type="range" min="0" max="100" value="${bl}" style="flex:1;" oninput="window.changeFilter('${id}', 'blur', this.value, this);" onchange="window.saveState()">
-                    <input type="number" value="${bl}" style="width:70px; padding:8px;" oninput="window.changeFilter('${id}', 'blur', this.value, this);" onchange="window.saveState()">
-                </div>
-            </div>`;
-            styleHtml += createPropGroup("<i class='ph ph-magic-wand'></i> Efektler & Görünüm", fxHtml);
-
-            // --- 3. METİN SEKMESİ ---
-            if (isText) {
-                const rawText = (window.getD(el, 'raw-text') || el.textContent).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                const varName = window.getD(el, 'var-name') || "";
                 
-                let rectOptions = `<option value="">-- Serbest Bırak (Sabitleme Yok) --</option>`;
-                document.querySelectorAll('#canvas-inner svg rect.duzenlenebilir, #canvas-inner svg image.duzenlenebilir').forEach(r => {
-                    const isSelected = window.getD(el, 'bound-rect') === r.id ? 'selected' : '';
-                    rectOptions += `<option value="${r.id}" ${isSelected}>Şekil/Resim: ${r.id}</option>`;
-                });
-
-                let contentHtml = `
-                    <div style="margin-bottom:10px;">
-                        <div class="label-text" style="margin-bottom:5px;">METİN İÇERİĞİ</div>
-                        <input type="text" value="${rawText}" oninput="window.changeSetting('${id}', 'raw-text', this.value); window.refreshAutoTextFields();" onchange="window.saveState()" placeholder="Metni girin..." style="margin-bottom:10px;">
-                    </div>
-                    <div style="margin-bottom:10px;">
-                        <div class="label-text" style="color:#f472b6; margin-bottom:5px;">OTOMATİK DEĞİŞKEN ADI (Örn: FIYAT)</div>
-                        <input type="text" value="${varName}" placeholder="Boş bırakırsanız listede görünmez" 
-                               oninput="this.value = this.value.toUpperCase(); window.setD(document.getElementById('${id}'), 'var-name', this.value); window.refreshAutoTextFields();" 
-                               onchange="window.saveState()" style="border-color:#f472b6;">
-                    </div>
-                    <div style="padding:10px; background:rgba(16, 185, 129, 0.1); border:1px solid #10b981; border-radius:8px; margin-top:10px;">
-                        <div class="label-text" style="color:#10b981; margin-bottom:5px;"><i class="ph ph-intersect"></i> BİR KUTUYA SABİTLE (ORTALA & SIĞDIR)</div>
-                        <div style="font-size:10px; color:#94a3b8; margin-bottom:8px; font-style:italic;">Seçilen kutunun tam ortasına yapışır ve taşmayı önler.</div>
-                        <select class="font-select" style="border-color:#10b981; background:#0f172a;" onchange="window.changeSetting('${id}', 'bound-rect', this.value); window.autoFitText(document.getElementById('${id}')); window.updateEditorUI(document.getElementById('${id}')); window.saveState();">
-                            ${rectOptions}
-                        </select>
-                    </div>
-                `;
-                textHtml += createPropGroup("<i class='ph ph-text-t'></i> Metin ve Sabitleme", contentHtml);
-
-                const ls = parseFloat(el.getAttribute("letter-spacing")) || 0; const currentFont = el.getAttribute("font-family") || "sans-serif"; const curve = parseFloat(window.getD(el, 'curve')) || 0; const mw = parseFloat(window.getD(el, 'max-width')) || 0; const mh = parseFloat(window.getD(el, 'max-height')) || 0;
-                const isB = el.getAttribute('font-weight') === 'bold'; const isI = el.getAttribute('font-style') === 'italic'; const isU = el.getAttribute('text-decoration') === 'underline';
-                const tAlign = el.getAttribute('text-anchor') || 'middle';
-                let fontOptionsHtml = googleFonts.map(font => `<option value="${font.val}" style="font-family: ${font.val}" ${currentFont.includes(font.name) ? "selected" : ""}>${font.name}</option>`).join('');
-                
-                let fontHtml = `<select class="font-select" style="margin-bottom:15px;" onchange="const t=document.getElementById('${id}'); t.setAttribute('font-family', this.value); t.style.fontFamily=this.value; window.applyTextCurve(t); if(window.updateEditorUI) window.updateEditorUI(t); window.saveState();">${fontOptionsHtml}</select>
-                    <div style="display:flex; gap:5px; margin-bottom:15px;">
-                        <button class="action-btn ${isB?'active':''}" style="flex:1; font-size:16px;" onclick="window.applyTextStyle('${id}', 'bold')"><i class="ph ph-text-b"></i></button>
-                        <button class="action-btn ${isI?'active':''}" style="flex:1; font-size:16px;" onclick="window.applyTextStyle('${id}', 'italic')"><i class="ph ph-text-italic"></i></button>
-                        <button class="action-btn ${isU?'active':''}" style="flex:1; font-size:16px;" onclick="window.applyTextStyle('${id}', 'underline')"><i class="ph ph-text-underline"></i></button>
-                        <div style="width:1px; background:var(--border); margin:0 5px;"></div>
-                        <button class="action-btn ${tAlign==='start'?'active':''}" style="flex:1; font-size:16px;" onclick="window.applyTextStyle('${id}', 'align', 'start')"><i class="ph ph-text-align-left"></i></button>
-                        <button class="action-btn ${tAlign==='middle'?'active':''}" style="flex:1; font-size:16px;" onclick="window.applyTextStyle('${id}', 'align', 'middle')"><i class="ph ph-text-align-center"></i></button>
-                        <button class="action-btn ${tAlign==='end'?'active':''}" style="flex:1; font-size:16px;" onclick="window.applyTextStyle('${id}', 'align', 'end')"><i class="ph ph-text-align-right"></i></button>
-                    </div>
-                    <div class="action-row" style="margin-bottom:15px;">
-                        <button class="action-btn" onclick="window.applyTextStyle('${id}', 'normal')">Stil Temizle</button>
-                        <button class="action-btn special" onclick="document.getElementById('${id}').removeAttribute('textLength'); document.getElementById('${id}').removeAttribute('lengthAdjust'); window.autoFitText(document.getElementById('${id}')); window.saveState(); window.renderProperties();"><i class="ph ph-arrows-out-line-horizontal"></i> ESNETMEYİ SIFIRLA</button>
-                    </div>
-                    <div class="action-row" style="margin-bottom:15px;"><button class="action-btn" onclick="window.applyTextStyle('${id}', 'neon')">Neon</button><button class="action-btn" onclick="window.applyTextStyle('${id}', '3d')">3D</button><button class="action-btn" onclick="window.applyTextStyle('${id}', 'hollow')">Hollow</button></div>
-                    
-                    <div class="label-row"><span class="label-text">EĞRİLİK (KAVİS)</span><span class="value-badge" id="val-curve-${id}">${curve}</span></div>
-                    <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                        <input type="range" min="-100" max="100" value="${curve}" style="flex:1;" oninput="window.changeSetting('${id}', 'curve', this.value, this);" onchange="window.saveState()">
-                        <input type="number" value="${curve}" style="width:70px; padding:8px;" oninput="window.changeSetting('${id}', 'curve', this.value, this);" onchange="window.saveState()">
-                    </div>
-                    <div class="label-row"><span class="label-text">HARF ARALIĞI</span><span class="value-badge" id="val-letter-spacing-${id}">${ls}px</span></div>
-                    <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                        <input type="range" min="-20" max="100" value="${ls}" style="flex:1;" oninput="window.changeSetting('${id}', 'letter-spacing', this.value, this);" onchange="window.saveState()">
-                        <input type="number" value="${ls}" style="width:70px; padding:8px;" oninput="window.changeSetting('${id}', 'letter-spacing', this.value, this);" onchange="window.saveState()">
-                    </div>
-                    <div class="label-row"><span class="label-text">SIĞDIRMA GENİŞLİK (MAX-W)</span><span class="value-badge" id="val-max-width-${id}">${mw === 0 ? 'KAPALI' : mw+'px'}</span></div>
-                    <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                        <input type="range" min="0" max="2000" value="${mw}" style="flex:1;" oninput="window.changeSetting('${id}', 'max-width', this.value, this);" onchange="window.saveState()">
-                        <input type="number" value="${mw}" style="width:70px; padding:8px;" oninput="window.changeSetting('${id}', 'max-width', this.value, this);" onchange="window.saveState()">
-                    </div>
-                    <div class="label-row"><span class="label-text">SIĞDIRMA YÜKSEKLİK (MAX-H)</span><span class="value-badge" id="val-max-height-${id}">${mh === 0 ? 'KAPALI' : mh+'px'}</span></div>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="range" min="0" max="2000" value="${mh}" style="flex:1;" oninput="window.changeSetting('${id}', 'max-height', this.value, this);" onchange="window.saveState()">
-                        <input type="number" value="${mh}" style="width:70px; padding:8px;" oninput="window.changeSetting('${id}', 'max-height', this.value, this);" onchange="window.saveState()">
-                    </div>`;
-                textHtml += createPropGroup("<i class='ph ph-text-aa'></i> Yazı Tipi & Biçimlendirme", fontHtml);
-            }
-
-            // --- 4. KOD SEKMESİ ---
-            const rawSvgCode = el.outerHTML.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            let editorCodeHtml = `<textarea id="raw-svg-code" style="width:100%; height:250px; background:#000; color:var(--accent); font-family:monospace; font-size:11px; padding:10px; border-radius:8px; border:1px solid var(--border); resize:vertical;" onchange="window.saveState()">${rawSvgCode}</textarea>
-            <button class="action-btn active" style="width:100%; margin-top:10px; padding:12px;" onclick="window.applyRawCode('${id}')"><i class="ph ph-terminal-window"></i> KODU UYGULA</button>`;
-            codeHtml += createPropGroup("<i class='ph ph-file-code'></i> Canlı SVG Kodu", editorCodeHtml);
-
-            // TÜM SEKMELERİ BİRLEŞTİR
-            f.innerHTML = headerHtml + tabsNav + 
-                `<div id="tab-layout" class="tab-content active">${layoutHtml}</div>` +
-                `<div id="tab-style" class="tab-content">${styleHtml}</div>` +
-                (isText ? `<div id="tab-text" class="tab-content">${textHtml}</div>` : '') +
-                `<div id="tab-code" class="tab-content">${codeHtml}</div>`;
-
-        } catch(err) {
-            console.error("Özellik Paneli Hatası:", err);
-            f.innerHTML = `<div style="color:#ef4444; padding:20px; font-size:12px; text-align:center;"><i class="ph ph-warning-circle" style="font-size:32px; display:block; margin-bottom:10px;"></i> Özellikler yüklenemedi. Lütfen nesneyi tekrar seçin.</div>`;
-        }
-    };
-
-    window.applyRawCode = function(id) {
-        try {
-            let p = new DOMParser(); 
-            let code = document.getElementById('raw-svg-code').value.trim();
-            let n;
-            if (!code.toLowerCase().startsWith('<svg')) {
-                let d = p.parseFromString('<svg xmlns="http://www.w3.org/2000/svg">' + code + '</svg>', 'image/svg+xml');
-                if(d.documentElement.tagName === 'parsererror') throw new Error('Hatalı Kod');
-                n = d.documentElement.firstElementChild;
-            } else {
-                let d = p.parseFromString(code, 'image/svg+xml'); 
-                n = d.documentElement; 
-                if(n.tagName==='parsererror') throw new Error('Hatalı Kod');
-            }
-            if(!n) throw new Error('Geçersiz SVG');
-            let o = document.getElementById(id); o.replaceWith(n); selectedEl = n; 
-            if(!selectedEl.id) selectedEl.id='el_'+Date.now(); 
-            if(!selectedEl.classList.contains('duzenlenebilir')) selectedEl.classList.add('duzenlenebilir'); 
-            window.saveState(); window.setupLayers(); window.updateEditorUI(selectedEl); window.renderEditor(); 
-            window.showToast("Özel Kod Uygulandı!");
-        } catch(err) { window.showToast('Lütfen geçerli bir SVG kodu girin.', 'error'); }
-    };
-</script>
-</body>
-</html>
+                if (fillType === 'solid') { 
+                    fillHtml += `<div class="label-text" style="margin-bottom:5px;">${isPath?'ÇİZGİ':'İÇ'} RENK</div><div style="display:flex; gap:10px; align-items:center;"><input type="color" value="${safeColor(solidCol)}" oninput="window.changeSetting('${id}', 'solid-color', this.value); this.nextElementSibling.nextElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();" style="width:45px; height:45px; cursor:pointer; border:none; background:none; border-radius:8px;"><button class="action-btn" style="flex:0 0 45px; padding:12px; background:#334155; font-size:18px;" onclick="window.pickColor('${id}', 'solidColor', 'fill')" title="Göz Damlası"><i class="ph ph-eyedropper"></i></button><input type="text" value="${safeColor(solidCol)}" style="flex:1;" oninput="window.changeSetting('${id}', 'solid-color', this.value); this.previousElementSibling.previousElementSibling.value=this.value;" onchange="window.addRecentColor(this.value); window.saveState();"></div>`; 
+                } else { 
+                    fillHtml += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="input-group"><span class="label-text">RENK 1</span><div style="display:flex; gap:5px; align-items:center;"><input type="color" value="${safeColor(col1)}" oninput="window.changeSetting('${id}', 'color1', this.value);" onchange="window.addRecentColor(this.value); window.saveState();" style="width:35px; height:35px; cursor:pointer; border:none; background:none;"><button class="action-btn" style="padding:8px; background:#334155; font-size:16px;" onclick="window.pickColor('${id}', 'color1', '')"><i class="ph ph-eyedropper"></i></button></div></div><div class="input-group"><span class="label-text">RENK 2</span><div style="display:flex; gap:5px; align-items:center;"><input type="color" value="${safeColor(col2)}" oninput="window.changeSetting('${id}', 'color2', this.value);" onchange="window.addRecent
