@@ -1,137 +1,182 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <meta charset="UTF-8">
-    <title>SVG Pro Studio - Display V42</title>
+    <title>Dinamik Animasyon Slider - TV Optimize (Çift Alan)</title>
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
         #slider { position: relative; width: 100vw; height: 100vh; }
-        .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: all 1s ease-in-out; pointer-events: none; object-fit: contain; backface-visibility: hidden; transform: translateZ(0); will-change: opacity, transform; }
+        
+        /* Animasyon Efektleri ve TV (GPU) Hızlandırma */
+        .slide { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            opacity: 0; 
+            transition: all 1s ease-in-out; 
+            pointer-events: none; 
+            border: none; 
+            object-fit: contain; 
+            
+            /* TV Bellek Optimizasyonları */
+            backface-visibility: hidden;
+            perspective: 1000px;
+            transform: translateZ(0); 
+            will-change: opacity, transform; 
+        }
         .slide.active { opacity: 1; z-index: 10; }
         
         /* Efekt Sınıfları */
+        .fade{opacity:0;}.fade.active{opacity:1;}
+        .slide-left{transform:translateX(100%);opacity:0;}.slide-left.active{transform:translateX(0);opacity:1;transition:all 1s ease-in-out;}
+        .zoom{transform:scale(0.5);opacity:0;}.zoom.active{transform:scale(1);opacity:1;transition:all 2.9s ease-in-out;}
+        .slide-up { transform:translateY(100%); opacity:0; } .slide-up.active { transform:translateY(0); opacity:1; transition:all 1s ease-in-out; }
+        .rotate-zoom { transform:rotate(-180deg) scale(0.5); opacity:0; } .rotate-zoom.active { transform:rotate(0deg) scale(1); opacity:1; transition:all 1.5s ease-in-out; }
+        .circle{clip-path: circle(0% at 50% 50%);opacity:0;}.circle.active{clip-path: circle(100% at 50% 50%);opacity:1;transition: all 4s ease;}
+        .wave{transform: translateY(100%) rotate(10deg);opacity:0;}.wave.active{transform: translateY(0) rotate(0);opacity:1;transition: all 2s ease;}
+        .curtain{clip-path: inset(0 50% 0 50%);opacity:0;}.curtain.active{clip-path: inset(0 0 0 0);opacity:1;transition: all 5s ease;}
+        .spin-zoom{transform: scale(0.2) rotate(-360deg);opacity:0;}.spin-zoom.active{transform: scale(1) rotate(0);opacity:1;transition: all 1.9s ease;}
+        .rotate3d {transform: rotate3d(1,1,0,90deg);opacity:0;}.rotate3d.active{transform: rotate3d(0,0,0,0deg);opacity:1;transition: all 1.9s ease;}
         .cube{transform:rotateY(180deg) scale(.5);opacity:0;}.cube.active{transform:rotateY(0) scale(1);opacity:1;transition:1.5s;}
-        .fade.active { opacity: 1; }
-
-        .overlay-box { position: absolute; bottom: 4%; z-index: 100; border: 3px solid #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); background-color: #000; transition: all 0.5s ease; }
-        #sabit-alan-sol { left: 4%; }
-        #sabit-alan-sag { right: 4%; }
-        .overlay-box video, .overlay-box img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.6s ease; }
     </style>
 </head>
 <body>
 
 <div id="slider"></div>
 
-<div id="sabit-alan-sol" class="overlay-box">
-    <video id="sol-video" autoplay loop muted playsinline></video>
-</div>
-
-<div id="sabit-alan-sag" class="overlay-box">
-    <img id="sag-resim" src="" alt="Dinamik Sağ">
-</div>
-
 <script>
     const slider = document.getElementById("slider");
-    const videoSol = document.getElementById('sol-video');
-    const sagImgEl = document.getElementById("sag-resim");
     let slides = [];
-    let slideTimer;
-    let currentConfig = null;
-    let hls = null;
-    let sagIdx = 0;
-    let sagInterval;
+    let timer;
+    let isUpdating = false; 
 
-    async function syncSystem() {
+    // OTOMATİK TAM EKRAN: 5 Saniye Sonra
+    setTimeout(() => {
+        const docEl = document.documentElement;
+        const requestMethod = docEl.requestFullscreen || docEl.webkitRequestFullScreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+        if (requestMethod) {
+            requestMethod.call(docEl).catch(err => console.warn("Tam ekran hatası:", err));
+        }
+    }, 5000);
+
+    // ANDROID TV: 4 Saatte bir belleği temizle
+    setTimeout(() => window.location.reload(), 4 * 60 * 60 * 1000);
+
+    async function initSlider() {
         try {
             const resp = await fetch('settings.json?t=' + Date.now());
             const config = await resp.json();
-            
-            // Slayt Değişikliği Kontrolü
-            if (!currentConfig || JSON.stringify(currentConfig.slides) !== JSON.stringify(config.slides)) {
-                initSlider(config.slides);
-            }
 
-            // Sol Ekran (M3U8) Kontrolü
-            const msL = config.mini_screens.left;
-            const solBox = document.getElementById('sabit-alan-sol');
-            if(msL.visible) {
-                solBox.style.display = "block";
-                solBox.style.width = msL.w + "vw";
-                solBox.style.height = msL.h + "vw";
-                if(videoSol.dataset.url !== msL.url) {
-                    loadVideo(msL.url);
-                    videoSol.dataset.url = msL.url;
-                }
-            } else { solBox.style.display = "none"; }
+            // Eski zamanlayıcıları temizle
+            slides.forEach(s => {
+                if (s.imageTimer1) clearInterval(s.imageTimer1);
+                if (s.imageTimer2) clearInterval(s.imageTimer2);
+            });
 
-            // Sağ Ekran (Resim Rotasyonu) Kontrolü
-            const msR = config.mini_screens.right;
-            const sagBox = document.getElementById('sabit-alan-sag');
-            if(msR.visible) {
-                sagBox.style.display = "block";
-                sagBox.style.width = msR.w + "vw";
-                sagBox.style.height = msR.h + "vw";
-                startRightRotation(msR.images, msR.interval);
-            } else { sagBox.style.display = "none"; }
+            slider.innerHTML = ""; 
+            slides = [];
+            let cacheBuster = Math.floor(Date.now() / 30000);
 
-            currentConfig = config;
-        } catch (e) { console.error("Sync Error", e); }
+            config.forEach((s) => {
+                const obj = document.createElement("object");
+                let initialUrl = s.file + "?v=" + cacheBuster;
+                obj.data = initialUrl; 
+                obj.type = "image/svg+xml";
+                obj.className = `slide ${s.effect}`;
+                obj.dataset.duration = s.duration;
+                obj.dataset.currentUrl = initialUrl;
+
+                obj.addEventListener('load', function() {
+                    try {
+                        const svgDoc = obj.contentDocument;
+                        if (!svgDoc) return;
+
+                        // --- ALAN 1 ROTASYONU ---
+                        const imgElement1 = svgDoc.getElementById("degisen-resim-1");
+                        if (imgElement1) {
+                            const subImages1 = ["resim1.jpg", "resim2.jpg", "resim3.jpg"]; 
+                            let idx1 = 0;
+                            
+                            // ANINDA İLK RESMİ YÜKLE
+                            imgElement1.setAttribute("href", subImages1[0]);
+                            imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages1[0]);
+
+                            if(obj.imageTimer1) clearInterval(obj.imageTimer1);
+                            obj.imageTimer1 = setInterval(() => {
+                                if (!obj.classList.contains("active")) return;
+                                idx1 = (idx1 + 1) % subImages1.length;
+                                imgElement1.setAttribute("href", subImages1[idx1]);
+                                imgElement1.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages1[idx1]);
+                            }, 3000); 
+                        }
+
+                        // --- ALAN 2 ROTASYONU ---
+                        const imgElement2 = svgDoc.getElementById("degisen-resim-2");
+                        if (imgElement2) {
+                            const subImages2 = ["resim4.jpg", "resim5.jpg", "resim6.jpg"]; 
+                            let idx2 = 0;
+
+                            // ANINDA İLK RESMİ YÜKLE (Gecikmeyi ve yanlış resmi önler)
+                            imgElement2.setAttribute("href", subImages2[0]);
+                            imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages2[0]);
+
+                            if(obj.imageTimer2) clearInterval(obj.imageTimer2);
+                            obj.imageTimer2 = setInterval(() => {
+                                if (!obj.classList.contains("active")) return;
+                                idx2 = (idx2 + 1) % subImages2.length;
+                                imgElement2.setAttribute("href", subImages2[idx2]);
+                                imgElement2.setAttributeNS("http://www.w3.org/1999/xlink", "href", subImages2[idx2]);
+                            }, 3000); 
+                        }
+                    } catch(e) { console.warn("CORS hatası:", e); }
+                });
+
+                slider.appendChild(obj);
+                slides.push(obj);
+            });
+
+            showSlide(0);
+        } catch (err) { setTimeout(initSlider, 5000); }
     }
 
-    function initSlider(slideList) {
-        slider.innerHTML = "";
-        slides = [];
-        slideList.forEach((s) => {
-            const obj = document.createElement("object");
-            obj.data = s.file + "?v=" + Math.floor(Date.now() / 60000);
-            obj.type = "image/svg+xml";
-            obj.className = `slide ${s.effect}`;
-            obj.dataset.duration = s.duration;
-            slider.appendChild(obj);
-            slides.push(obj);
-        });
-        showSlide(0);
-    }
-
-    function showSlide(index) {
+    async function showSlide(index) {
         if (slides.length === 0) return;
         slides.forEach(s => s.classList.remove("active"));
         slides[index].classList.add("active");
-        clearTimeout(slideTimer);
-        slideTimer = setTimeout(() => showSlide((index + 1) % slides.length), parseInt(slides[index].dataset.duration));
+
+        const duration = parseInt(slides[index].dataset.duration) || 5000;
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+            await updateCheck();
+            showSlide((index + 1) >= slides.length ? 0 : index + 1);
+        }, duration);
     }
 
-    function loadVideo(url) {
-        if (hls) hls.destroy();
-        if (Hls.isSupported()) {
-            hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(videoSol);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => videoSol.play());
-        } else if (videoSol.canPlayType('application/vnd.apple.mpegurl')) {
-            videoSol.src = url;
-        }
+    async function updateCheck() {
+        if (isUpdating) return; 
+        isUpdating = true;
+        try {
+            const resp = await fetch('settings.json?t=' + Date.now());
+            const newConfig = await resp.json();
+            if (newConfig.length !== slides.length) {
+                initSlider();
+                return;
+            }
+            let cacheBuster = Math.floor(Date.now() / 30000); 
+            newConfig.forEach((item, i) => {
+                if (slides[i]) {
+                    slides[i].dataset.duration = item.duration;
+                    let targetUrl = item.file + "?v=" + cacheBuster;
+                    if (!slides[i].classList.contains("active") && slides[i].dataset.currentUrl !== targetUrl) {
+                        slides[i].data = targetUrl;
+                        slides[i].dataset.currentUrl = targetUrl;
+                    }
+                }
+            });
+        } catch (e) { } finally { isUpdating = false; }
     }
 
-    function startRightRotation(images, interval) {
-        if (sagInterval) clearInterval(sagInterval);
-        sagImgEl.src = images[0];
-        sagInterval = setInterval(() => {
-            sagImgEl.style.opacity = 0;
-            setTimeout(() => {
-                sagIdx = (sagIdx + 1) % images.length;
-                sagImgEl.src = images[sagIdx];
-                sagImgEl.style.opacity = 1;
-            }, 600);
-        }, interval || 5000);
-    }
-
-    syncSystem();
-    setInterval(syncSystem, 30000); // 30 saniyede bir bulutu kontrol et
-    setTimeout(() => document.documentElement.requestFullscreen?.(), 5000);
-    setTimeout(() => window.location.reload(), 4 * 60 * 60 * 1000); // 4 saatte bir refresh
+    initSlider();
 </script>
 </body>
 </html>
