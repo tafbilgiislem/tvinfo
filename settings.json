@@ -1,22 +1,22 @@
-{
-  "slides": [
-    { "file": "slayt.svg", "effect": "cube", "duration": 7000 },
-    { "file": "kampanya.svg", "effect": "cube", "duration": 10000 },
-    { "file": "duyuru.svg", "effect": "cube", "duration": 10000 }
-  ],
-  "mini_screens": {
-    "left": {
-      "visible": true,
-      "url": "https://tv-trtspor1.medya.trt.com.tr/master_1080.m3u8",
-      "w": 32,
-      "h": 18
-    },
-    "right": {
-      "visible": true,
-      "images": ["resim7.jpg", "resim8.jpg", "resim9.jpg"],
-      "w": 32,
-      "h": 18,
-      "interval": 5000
-    }
+[
+  {
+    "file": "slayt.svg",
+    "effect": "cube",
+    "duration": 7000
+  },
+  {
+    "file": "kampanya.svg",
+    "effect": "cube",
+    "duration": 10000
+  },
+  {
+    "file": "slayt.svg",
+    "effect": "cube",
+    "duration": 7000
+  },
+  {
+    "file": "duyuru.svg",
+    "effect": "cube",
+    "duration": 10000
   }
-}
+]
