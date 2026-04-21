@@ -1,22 +1,56 @@
-[
-  {
-    "file": "slayt.svg",
-    "effect": "cube",
-    "duration": 7000
+{
+  "slides": [
+    {
+      "file": "slayt.svg",
+      "effect": "cube",
+      "duration": 7000
+    },
+    {
+      "file": "kampanya.svg",
+      "effect": "cube",
+      "duration": 10000
+    },
+    {
+      "file": "slayt.svg",
+      "effect": "cube",
+      "duration": 7000
+    },
+    {
+      "file": "duyuru.svg",
+      "effect": "cube",
+      "duration": 10000
+    }
+  ],
+  "mini_screens": {
+    "left": {
+      "visible": true,
+      "x": 50,
+      "y": 800,
+      "w": 400,
+      "h": 250,
+      "url": ""
+    },
+    "right": {
+      "visible": true,
+      "x": 1470,
+      "y": 800,
+      "w": 400,
+      "h": 250,
+      "images": []
+    }
   },
-  {
-    "file": "kampanya.svg",
-    "effect": "cube",
-    "duration": 10000
-  },
-  {
-    "file": "slayt.svg",
-    "effect": "cube",
-    "duration": 7000
-  },
-  {
-    "file": "duyuru.svg",
-    "effect": "cube",
-    "duration": 10000
+  "ticker": {
+    "visible": true,
+    "showClock": true,
+    "text": "Sondakika haberleri...",
+    "speed": 20,
+    "x": 0,
+    "y": 1000,
+    "w": 1920,
+    "h": 80,
+    "font": "sans-serif",
+    "color": "#ffffff",
+    "opacity": 0.8,
+    "fontSize": 26
   }
-]
+}
