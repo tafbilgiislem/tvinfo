@@ -41,7 +41,7 @@
   },
   "ticker": {
     "visible": true,
-    "showClock": true,
+    "showClock": false,
     "text": "Sondakika haberleri...",
     "speed": 20,
     "x": 0,
